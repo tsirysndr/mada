@@ -39,7 +39,7 @@ import (
 // communesCmd represents the communes command
 var communesCmd = &cobra.Command{
 	Use:   "communes",
-	Short: "A brief description of your command",
+	Short: "Show all communes",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 

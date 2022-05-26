@@ -39,7 +39,7 @@ import (
 // districtsCmd represents the districts command
 var districtsCmd = &cobra.Command{
 	Use:   "districts",
-	Short: "A brief description of your command",
+	Short: "Show all districts",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 

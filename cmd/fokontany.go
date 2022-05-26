@@ -39,7 +39,7 @@ import (
 // fokontanyCmd represents the fokontany command
 var fokontanyCmd = &cobra.Command{
 	Use:   "fokontany",
-	Short: "A brief description of your command",
+	Short: "Show all fokontany",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 

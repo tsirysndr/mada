@@ -31,23 +31,34 @@ POSSIBILITY OF SUCH DAMAGE.
 package cmd
 
 import (
+	"fmt"
 	"os"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
-	"github.com/tsirysndr/mada/mada"
 )
+
+const banner = `
+888b     d888               888                .d8888b.  888      8888888 
+8888b   d8888               888               d88P  Y88b 888        888   
+88888b.d88888               888               888    888 888        888   
+888Y88888P888  8888b.   .d88888  8888b.       888        888        888   
+888 Y888P 888     "88b d88" 888     "88b      888        888        888   
+888  Y8P  888 .d888888 888  888 .d888888      888    888 888        888   
+888   "   888 888  888 Y88b 888 888  888      Y88b  d88P 888        888   
+888       888 "Y888888  "Y88888 "Y888888       "Y8888P"  88888888 8888888
+`
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use: "mada",
-	Short: `Mada is a CLI that facilitates the search for regions, districts, communes and fokontany.
-	`,
-	Long: `Mada is a CLI that facilitates the search for regions, districts, communes and fokontany.`,
+	Use:   "mada",
+	Short: `Mada is a CLI that facilitates the search for regions, districts, communes and fokontany.`,
+	Long:  fmt.Sprintf("Mada is a CLI that facilitates the search for regions, districts, communes and fokontany.\n%s", color.CyanString(banner)),
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
 	Run: func(cmd *cobra.Command, args []string) {
-		mada.Init()
+		cmd.Help()
 	},
 }
 

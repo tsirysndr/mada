@@ -2,6 +2,9 @@
 
 Mada is a CLI that facilitates the search for regions, districts, communes and fokontany.
 
+<img src="./preview.png" />
+
+
 ## 🚚 Installation
 
 ```bash
