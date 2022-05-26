@@ -3,13 +3,14 @@ package mada
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 
 	"github.com/blevesearch/bleve/v2"
 	"github.com/blevesearch/bleve/v2/search/highlight/highlighter/ansi"
 )
 
 func Search(term string, outputInJSON bool) {
-	index, err := CreateOrOpenBleve()
+	index, err := InitializeBleve()
 
 	if err != nil {
 		panic(err)
@@ -35,4 +36,11 @@ func Search(term string, outputInJSON bool) {
 	b, _ := json.MarshalIndent(searchResults.Hits, "", "  ")
 
 	fmt.Println(string(b))
+}
+
+func InitializeBleve() (bleve.Index, error) {
+	if _, err := os.Stat(DATABASE_PATH); os.IsNotExist(err) {
+		return Init()
+	}
+	return bleve.Open(DATABASE_PATH)
 }

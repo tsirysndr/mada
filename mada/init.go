@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"embed"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -12,8 +13,11 @@ import (
 
 	"github.com/blevesearch/bleve/v2"
 	"github.com/everystreet/go-shapefile"
+	"github.com/mitchellh/go-homedir"
 	"github.com/twpayne/go-geom"
 )
+
+var DATABASE_PATH string = filepath.Join(CreateConfigDir(), "mada.bleve")
 
 type Shape struct {
 	Type       string     `json:"type"`
@@ -56,7 +60,7 @@ type Geometry struct {
 //go:embed shp/*
 var Assets embed.FS
 
-func Init() {
+func Init() (bleve.Index, error) {
 
 	index, err := CreateOrOpenBleve()
 
@@ -82,16 +86,18 @@ func Init() {
 		parseShapefile(filename, index)
 	}
 
+	return index, nil
 }
 
 func CreateOrOpenBleve() (bleve.Index, error) {
-	if _, err := os.Stat("mada.bleve"); os.IsNotExist(err) {
+	if _, err := os.Stat(DATABASE_PATH); os.IsNotExist(err) {
 		geometryMapping := bleve.NewDocumentDisabledMapping()
+
 		mapping := bleve.NewIndexMapping()
 		mapping.DefaultMapping.AddSubDocumentMapping("geometry", geometryMapping)
-		return bleve.New("mada.bleve", mapping)
+		return bleve.New(DATABASE_PATH, mapping)
 	}
-	return bleve.Open("mada.bleve")
+	return bleve.Open(DATABASE_PATH)
 }
 
 func parseShapefile(name string, index bleve.Index) {
@@ -191,4 +197,16 @@ func parseShapefile(name string, index bleve.Index) {
 
 	// Err() returns the first error encountered during calls to Record()
 	scanner.Err()
+}
+
+func CreateConfigDir() string {
+	home, _ := homedir.Dir()
+	path := filepath.Join(home, ".mada")
+	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
+		err := os.Mkdir(path, os.ModePerm)
+		if err != nil {
+			panic(err)
+		}
+	}
+	return path
 }
