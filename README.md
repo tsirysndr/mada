@@ -8,7 +8,7 @@ Mada is a CLI that facilitates the search for regions, districts, communes and f
 ## 🚚 Installation
 
 ```bash
-go install github.com/tsirysndr/mada
+go install -v github.com/tsirysndr/mada@latest
 ```
 
 ## 🚀 Usage
