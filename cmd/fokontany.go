@@ -31,9 +31,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
+	"github.com/tsirysndr/mada/mada"
 )
 
 // fokontanyCmd represents the fokontany command
@@ -47,12 +46,17 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("fokontany called")
+		outputInJSON, _ := cmd.Flags().GetBool("json")
+		limit, _ := cmd.Flags().GetInt("limit")
+		f := mada.Fokontany{}
+		f.List(outputInJSON, limit)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(fokontanyCmd)
+	fokontanyCmd.Flags().BoolP("json", "j", false, "Output in JSON format")
+	fokontanyCmd.Flags().Int("limit", 100, "Limit the number of communes")
 
 	// Here you will define your flags and configuration settings.
 

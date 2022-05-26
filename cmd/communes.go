@@ -31,9 +31,8 @@ POSSIBILITY OF SUCH DAMAGE.
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
+	"github.com/tsirysndr/mada/mada"
 )
 
 // communesCmd represents the communes command
@@ -47,12 +46,17 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("communes called")
+		outputInJSON, _ := cmd.Flags().GetBool("json")
+		limit, _ := cmd.Flags().GetInt("limit")
+		c := mada.Commune{}
+		c.List(outputInJSON, limit)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(communesCmd)
+	communesCmd.Flags().BoolP("json", "j", false, "Output in JSON format")
+	communesCmd.Flags().Int("limit", 100, "Limit the number of communes")
 
 	// Here you will define your flags and configuration settings.
 
