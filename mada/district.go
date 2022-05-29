@@ -6,13 +6,16 @@ import (
 	"fmt"
 
 	"github.com/blevesearch/bleve/v2"
+	"github.com/twpayne/go-geom"
+	"github.com/twpayne/go-geom/encoding/wkt"
 )
 
 type District struct {
-	ID      string `json:"id"`
-	Name    string `json:"name"`
-	Region  string `json:"region"`
-	Country string `json:"country"`
+	ID          string         `json:"id"`
+	Name        string         `json:"name"`
+	Region      string         `json:"region"`
+	Country     string         `json:"country"`
+	Coordinates [][]geom.Coord `json:"coordinates"`
 }
 
 type DistrictService struct {
@@ -56,14 +59,22 @@ func (d *DistrictService) List(outputInJSON bool, limit int) {
 }
 
 func (d *DistrictService) ShowDistrict(id string, outputInJSON bool) {
-	rows, _ := d.db.Query("SELECT uid, name, region FROM district WHERE uid = ?", id)
+	rows, _ := d.db.Query("SELECT uid, name, region, ST_AsText(geom) FROM district WHERE uid = ?", id)
 	defer rows.Close()
-	var uid, name, region string
+	var uid, name, region, g string
 	rows.Next()
-	rows.Scan(&uid, &name, &region)
+	rows.Scan(&uid, &name, &region, &g)
+
+	p, _ := wkt.Unmarshal(g)
 
 	if outputInJSON {
-		b, _ := json.MarshalIndent(District{ID: uid, Name: name, Region: region, Country: "Madagascar"}, "", "  ")
+		b, _ := json.MarshalIndent(District{
+			ID:          uid,
+			Name:        name,
+			Region:      region,
+			Country:     "Madagascar",
+			Coordinates: p.(*geom.Polygon).Coords(),
+		}, "", "  ")
 		fmt.Println(string(b))
 		return
 	}
@@ -80,5 +91,7 @@ func (d *DistrictService) ShowDistrict(id string, outputInJSON bool) {
                 district
         country
                 Madagascar
-	`, uid, name, region)
+        geometry
+                %v
+	`, uid, name, region, p.(*geom.Polygon).Coords())
 }

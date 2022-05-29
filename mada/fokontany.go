@@ -6,15 +6,18 @@ import (
 	"fmt"
 
 	"github.com/blevesearch/bleve/v2"
+	"github.com/twpayne/go-geom"
+	"github.com/twpayne/go-geom/encoding/wkt"
 )
 
 type Fokontany struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	Commune  string `json:"commune"`
-	Region   string `json:"region"`
-	District string `json:"district"`
-	Country  string `json:"country"`
+	ID          string         `json:"id"`
+	Name        string         `json:"name"`
+	Commune     string         `json:"commune"`
+	Region      string         `json:"region"`
+	District    string         `json:"district"`
+	Country     string         `json:"country"`
+	Coordinates [][]geom.Coord `json:"coordinates"`
 }
 
 type FokontanyService struct {
@@ -58,20 +61,23 @@ func (f *FokontanyService) List(outputInJSON bool, limit int) {
 }
 
 func (f *FokontanyService) ShowFokontany(id string, outputInJSON bool) {
-	rows, _ := f.db.Query("SELECT uid, name, commune, region, district, country FROM fokontany WHERE uid = ?", id)
+	rows, _ := f.db.Query("SELECT uid, name, commune, region, district, country, ST_AsText(geom) FROM fokontany WHERE uid = ?", id)
 	defer rows.Close()
-	var uid, name, commune, district, region, country string
+	var uid, name, commune, district, region, country, g string
 	rows.Next()
-	rows.Scan(&uid, &name, &commune, &region, &district, &country)
+	rows.Scan(&uid, &name, &commune, &region, &district, &country, &g)
+
+	p, _ := wkt.Unmarshal(g)
 
 	if outputInJSON {
 		b, _ := json.MarshalIndent(Fokontany{
-			ID:       uid,
-			Name:     name,
-			Commune:  commune,
-			Region:   region,
-			District: district,
-			Country:  country,
+			ID:          uid,
+			Name:        name,
+			Commune:     commune,
+			Region:      region,
+			District:    district,
+			Country:     country,
+			Coordinates: p.(*geom.Polygon).Coords(),
 		}, "", "  ")
 		fmt.Println(string(b))
 		return
@@ -93,5 +99,7 @@ func (f *FokontanyService) ShowFokontany(id string, outputInJSON bool) {
                 fokontany
         country
                 Madagascar
-	`, uid, name, commune, region, district, country)
+        geometry
+                %v
+	`, uid, name, commune, region, district, country, p.(*geom.Polygon).Coords())
 }

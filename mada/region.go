@@ -6,12 +6,15 @@ import (
 	"fmt"
 
 	"github.com/blevesearch/bleve/v2"
+	"github.com/twpayne/go-geom"
+	"github.com/twpayne/go-geom/encoding/wkt"
 )
 
 type Region struct {
-	ID      string `json:"id"`
-	Name    string `json:"name"`
-	Country string `json:"country"`
+	ID          string         `json:"id"`
+	Name        string         `json:"name"`
+	Country     string         `json:"country"`
+	Coordinates [][]geom.Coord `json:"coordinates"`
 }
 
 type RegionService struct {
@@ -55,14 +58,16 @@ func (r *RegionService) List(outputInJSON bool, limit int) {
 }
 
 func (r *RegionService) ShowRegion(id string, outputInJSON bool) {
-	rows, _ := r.db.Query("SELECT uid, name FROM region WHERE uid = ?", id)
+	rows, _ := r.db.Query("SELECT uid, name, ST_AsText(geom) FROM region WHERE uid = ?", id)
 	defer rows.Close()
-	var uid, name string
+	var uid, name, g string
 	rows.Next()
-	rows.Scan(&uid, &name)
+	rows.Scan(&uid, &name, &g)
+
+	p, _ := wkt.Unmarshal(g)
 
 	if outputInJSON {
-		b, _ := json.MarshalIndent(Region{ID: uid, Name: name, Country: "Madagascar"}, "", "  ")
+		b, _ := json.MarshalIndent(Region{ID: uid, Name: name, Country: "Madagascar", Coordinates: p.(*geom.Polygon).Coords()}, "", "  ")
 		fmt.Println(string(b))
 		return
 	}
@@ -76,5 +81,7 @@ func (r *RegionService) ShowRegion(id string, outputInJSON bool) {
                 region
         country
                 Madagascar
-	`, uid, name)
+        geometry
+               %v
+	`, uid, name, p.(*geom.Polygon).Coords())
 }

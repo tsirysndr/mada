@@ -6,14 +6,17 @@ import (
 	"fmt"
 
 	"github.com/blevesearch/bleve/v2"
+	"github.com/twpayne/go-geom"
+	"github.com/twpayne/go-geom/encoding/wkt"
 )
 
 type Commune struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	Region   string `json:"region"`
-	District string `json:"district"`
-	Country  string `json:"country"`
+	ID          string         `json:"id"`
+	Name        string         `json:"name"`
+	Region      string         `json:"region"`
+	District    string         `json:"district"`
+	Country     string         `json:"country"`
+	Coordinates [][]geom.Coord `json:"coordinates"`
 }
 
 type CommuneService struct {
@@ -57,19 +60,22 @@ func (c *CommuneService) List(outputInJSON bool, limit int) {
 }
 
 func (c *CommuneService) ShowCommune(id string, outputInJSON bool) {
-	rows, _ := c.db.Query("SELECT uid, name, region, district, country FROM commune WHERE uid = ?", id)
+	rows, _ := c.db.Query("SELECT uid, name, region, district, country, ST_AsText(geom) FROM commune WHERE uid = ?", id)
 	defer rows.Close()
-	var uid, name, region, district, country string
+	var uid, name, region, district, country, g string
 	rows.Next()
-	rows.Scan(&uid, &name, &region, &district, &country)
+	rows.Scan(&uid, &name, &region, &district, &country, &g)
+
+	p, _ := wkt.Unmarshal(g)
 
 	if outputInJSON {
 		b, _ := json.MarshalIndent(Commune{
-			ID:       uid,
-			Name:     name,
-			Region:   region,
-			District: district,
-			Country:  country,
+			ID:          uid,
+			Name:        name,
+			Region:      region,
+			District:    district,
+			Country:     country,
+			Coordinates: p.(*geom.Polygon).Coords(),
 		}, "", "  ")
 
 		fmt.Println(string(b))
@@ -90,5 +96,7 @@ func (c *CommuneService) ShowCommune(id string, outputInJSON bool) {
                 commune
         country
                 Madagascar
-	`, uid, name, district, region)
+        geometry
+                %v
+	`, uid, name, district, region, p.(*geom.Polygon).Coords())
 }
