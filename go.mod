@@ -28,10 +28,12 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
+	github.com/jmoiron/sqlx v1.3.5 // indirect
 	github.com/lib/pq v1.10.6 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
+	github.com/mattn/go-sqlite3 v1.14.13 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mschoch/smat v0.2.0 // indirect
 	github.com/nats-io/nats.go v1.15.0 // indirect

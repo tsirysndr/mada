@@ -46,9 +46,18 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		id, _ := cmd.Flags().GetString("id")
 		outputInJSON, _ := cmd.Flags().GetBool("json")
+
+		c := mada.NewCommuneService()
+
+		if id != "" {
+			c.ShowCommune(id, outputInJSON)
+			return
+		}
+
 		limit, _ := cmd.Flags().GetInt("limit")
-		c := mada.Commune{}
+
 		c.List(outputInJSON, limit)
 	},
 }
@@ -56,7 +65,8 @@ to quickly create a Cobra application.`,
 func init() {
 	rootCmd.AddCommand(communesCmd)
 	communesCmd.Flags().BoolP("json", "j", false, "Output in JSON format")
-	communesCmd.Flags().Int("limit", 100, "Limit the number of communes")
+	communesCmd.Flags().IntP("limit", "l", 100, "Limit the number of communes")
+	communesCmd.Flags().StringP("id", "i", "", "Commune ID")
 
 	// Here you will define your flags and configuration settings.
 
