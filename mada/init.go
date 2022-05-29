@@ -14,6 +14,7 @@ import (
 
 	"github.com/blevesearch/bleve/v2"
 	"github.com/everystreet/go-shapefile"
+	_ "github.com/lib/pq"
 	"github.com/mattn/go-sqlite3"
 	"github.com/mitchellh/go-homedir"
 	"github.com/twpayne/go-geom"
@@ -70,17 +71,29 @@ func Init() (bleve.Index, error) {
 		log.Fatal(err)
 	}
 
-	db, err := OpenSQLiteConnection()
+	var db *sql.DB
 
-	if err != nil {
-		log.Fatal(err)
+	if os.Getenv("MADA_POSTGRES_URL") != "" {
+		db, err = OpenPostgresConnection()
+
+		if err != nil {
+			log.Fatal(err)
+		}
+		createPostgresTables(db)
+		addPostgresGeometryColumns(db)
+	} else {
+		db, err = OpenSQLiteConnection()
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		initializeSpatialMetadata(db)
+		createTables(db)
+		addGeometryColumns(db)
 	}
 
 	defer db.Close()
-
-	initializeSpatialMetadata(db)
-	createTables(db)
-	addGeometryColumns(db)
 
 	/*
 		level 0 - country
@@ -110,6 +123,18 @@ func OpenSQLiteConnection() (*sql.DB, error) {
 		})
 
 	return sql.Open("sqlite3_with_spatialite", filepath.Join(CreateConfigDir(), "spatialmada.db"))
+}
+
+func OpenPostgresConnection() (*sql.DB, error) {
+	db, err := sql.Open("postgres", os.Getenv("MADA_POSTGRES_URL"))
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	db.Exec("CREATE EXTENSION postgis;")
+
+	return db, nil
 }
 
 func CreateOrOpenBleve() (bleve.Index, error) {
@@ -291,20 +316,25 @@ func createTables(db *sql.DB) {
 	}
 }
 
+func createPostgresTables(db *sql.DB) {
+	queries := []string{
+		"CREATE TABLE IF NOT EXISTS country (id SERIAL PRIMARY KEY, uid TEXT NOT NULL UNIQUE, name TEXT);",
+		"CREATE TABLE IF NOT EXISTS region (id SERIAL PRIMARY KEY, uid TEXT NOT NULL UNIQUE, name TEXT, country TEXT);",
+		"CREATE TABLE IF NOT EXISTS district (id SERIAL PRIMARY KEY, uid TEXT NOT NULL UNIQUE, name TEXT, region TEXT, country TEXT);",
+		"CREATE TABLE IF NOT EXISTS commune (id SERIAL PRIMARY KEY, uid TEXT NOT NULL UNIQUE, name TEXT, district TEXT, region TEXT, country TEXT);",
+		"CREATE TABLE IF NOT EXISTS fokontany (id SERIAL PRIMARY KEY, uid TEXT NOT NULL UNIQUE, name TEXT, commune TEXT, district TEXT, region TEXT, country TEXT);",
+		"CREATE UNIQUE INDEX IF NOT EXISTS country_uid_idx ON country (uid);",
+		"CREATE UNIQUE INDEX IF NOT EXISTS region_uid_idx ON region (uid);",
+		"CREATE UNIQUE INDEX IF NOT EXISTS district_uid_idx ON district (uid);",
+		"CREATE UNIQUE INDEX IF NOT EXISTS commune_uid_idx ON commune (uid);",
+		"CREATE UNIQUE INDEX IF NOT EXISTS fokontany_uid_idx ON fokontany (uid);",
+	}
+	for _, query := range queries {
+		runQuery(db, query)
+	}
+}
+
 func addGeometryColumns(db *sql.DB) {
-	rows, err := db.Query("SELECT COUNT(*) AS CNTREC FROM pragma_table_info('commune') WHERE name='geom';")
-	if err != nil {
-		log.Fatal(err)
-	}
-	count := 0
-	for rows.Next() {
-		rows.Scan(&count)
-	}
-
-	if count == 1 {
-		return
-	}
-
 	queries := []string{
 		"SELECT AddGeometryColumn('country', 'geom', 4326, 'POLYGON', 2);",
 		"SELECT AddGeometryColumn('region', 'geom', 4326, 'POLYGON', 2);",
@@ -318,7 +348,21 @@ func addGeometryColumns(db *sql.DB) {
 		"SELECT CreateSpatialIndex('fokontany', 'geom');",
 	}
 	for _, query := range queries {
-		runQuery(db, query)
+		db.Exec(query)
+	}
+
+}
+
+func addPostgresGeometryColumns(db *sql.DB) {
+	queries := []string{
+		"SELECT AddGeometryColumn('public', 'country', 'geom', 4326, 'POLYGON', 2);",
+		"SELECT AddGeometryColumn('public', 'region', 'geom', 4326, 'POLYGON', 2);",
+		"SELECT AddGeometryColumn('public', 'district', 'geom', 4326, 'POLYGON', 2);",
+		"SELECT AddGeometryColumn('public', 'commune', 'geom', 4326, 'POLYGON', 2);",
+		"SELECT AddGeometryColumn('public', 'fokontany', 'geom', 4326, 'POLYGON', 2);",
+	}
+	for _, query := range queries {
+		db.Exec(query)
 	}
 
 }
@@ -346,6 +390,10 @@ func saveToDatabase(db *sql.DB, index bleve.Index, id string, polygon Polygon) {
 	coordsText := coordinatesToText(polygon)
 
 	geom := fmt.Sprintf("GeomFromText('POLYGON(%s)', 4326)", coordsText)
+
+	if os.Getenv("MADA_POSTGRES_URL") != "" {
+		geom = fmt.Sprintf("ST_GeomFromText('POLYGON(%s)', 4326)", coordsText)
+	}
 
 	q := ""
 

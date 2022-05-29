@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
+	"os"
 
 	"github.com/blevesearch/bleve/v2"
 	"github.com/twpayne/go-geom"
@@ -25,6 +27,14 @@ type FokontanyService struct {
 }
 
 func NewFokontanyService() *FokontanyService {
+	if os.Getenv("MADA_POSTGRES_URL") != "" {
+		db, err := sql.Open("postgres", os.Getenv("MADA_POSTGRES_URL"))
+		if err != nil {
+			panic(err)
+		}
+		return &FokontanyService{db: db}
+	}
+
 	db, err := OpenSQLiteConnection()
 
 	if err != nil {
@@ -61,7 +71,10 @@ func (f *FokontanyService) List(outputInJSON bool, limit int) {
 }
 
 func (f *FokontanyService) ShowFokontany(id string, outputInJSON bool) {
-	rows, _ := f.db.Query("SELECT uid, name, commune, region, district, country, ST_AsText(geom) FROM fokontany WHERE uid = ?", id)
+	rows, err := f.db.Query("SELECT uid, name, commune, region, district, country, ST_AsText(geom) FROM fokontany WHERE uid = $1", id)
+	if err != nil {
+		log.Fatal(err)
+	}
 	defer rows.Close()
 	var uid, name, commune, district, region, country, g string
 	rows.Next()

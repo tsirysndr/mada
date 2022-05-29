@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"os"
 
 	"github.com/blevesearch/bleve/v2"
 	"github.com/twpayne/go-geom"
@@ -23,6 +24,14 @@ type DistrictService struct {
 }
 
 func NewDistrictService() *DistrictService {
+	if os.Getenv("MADA_POSTGRES_URL") != "" {
+		db, err := sql.Open("postgres", os.Getenv("MADA_POSTGRES_URL"))
+		if err != nil {
+			panic(err)
+		}
+		return &DistrictService{db: db}
+	}
+
 	db, err := OpenSQLiteConnection()
 
 	if err != nil {
@@ -59,7 +68,7 @@ func (d *DistrictService) List(outputInJSON bool, limit int) {
 }
 
 func (d *DistrictService) ShowDistrict(id string, outputInJSON bool) {
-	rows, _ := d.db.Query("SELECT uid, name, region, ST_AsText(geom) FROM district WHERE uid = ?", id)
+	rows, _ := d.db.Query("SELECT uid, name, region, ST_AsText(geom) FROM district WHERE uid = $1", id)
 	defer rows.Close()
 	var uid, name, region, g string
 	rows.Next()

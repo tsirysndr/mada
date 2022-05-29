@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"os"
 
 	"github.com/blevesearch/bleve/v2"
 	"github.com/twpayne/go-geom"
@@ -22,6 +23,14 @@ type RegionService struct {
 }
 
 func NewRegionService() *RegionService {
+	if os.Getenv("MADA_POSTGRES_URL") != "" {
+		db, err := sql.Open("postgres", os.Getenv("MADA_POSTGRES_URL"))
+		if err != nil {
+			panic(err)
+		}
+		return &RegionService{db: db}
+	}
+
 	db, err := OpenSQLiteConnection()
 
 	if err != nil {
@@ -58,7 +67,7 @@ func (r *RegionService) List(outputInJSON bool, limit int) {
 }
 
 func (r *RegionService) ShowRegion(id string, outputInJSON bool) {
-	rows, _ := r.db.Query("SELECT uid, name, ST_AsText(geom) FROM region WHERE uid = ?", id)
+	rows, _ := r.db.Query("SELECT uid, name, ST_AsText(geom) FROM region WHERE uid = $1", id)
 	defer rows.Close()
 	var uid, name, g string
 	rows.Next()

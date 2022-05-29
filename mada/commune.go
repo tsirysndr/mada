@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"os"
 
 	"github.com/blevesearch/bleve/v2"
 	"github.com/twpayne/go-geom"
@@ -24,6 +25,14 @@ type CommuneService struct {
 }
 
 func NewCommuneService() *CommuneService {
+	if os.Getenv("MADA_POSTGRES_URL") != "" {
+		db, err := sql.Open("postgres", os.Getenv("MADA_POSTGRES_URL"))
+		if err != nil {
+			panic(err)
+		}
+		return &CommuneService{db: db}
+	}
+
 	db, err := OpenSQLiteConnection()
 
 	if err != nil {
@@ -60,7 +69,7 @@ func (c *CommuneService) List(outputInJSON bool, limit int) {
 }
 
 func (c *CommuneService) ShowCommune(id string, outputInJSON bool) {
-	rows, _ := c.db.Query("SELECT uid, name, region, district, country, ST_AsText(geom) FROM commune WHERE uid = ?", id)
+	rows, _ := c.db.Query("SELECT uid, name, region, district, country, ST_AsText(geom) FROM commune WHERE uid = $1", id)
 	defer rows.Close()
 	var uid, name, region, district, country, g string
 	rows.Next()
