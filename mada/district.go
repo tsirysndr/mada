@@ -71,24 +71,24 @@ func (d *DistrictService) ShowDistrict(id string, outputInJSON bool) {
 	rows, _ := d.db.Query("SELECT uid, name, region, ST_AsText(geom) FROM district WHERE uid = $1", id)
 	defer rows.Close()
 	var uid, name, region, g string
-	rows.Next()
-	rows.Scan(&uid, &name, &region, &g)
+	for rows.Next() {
+		rows.Scan(&uid, &name, &region, &g)
 
-	p, _ := wkt.Unmarshal(g)
+		p, _ := wkt.Unmarshal(g)
 
-	if outputInJSON {
-		b, _ := json.MarshalIndent(District{
-			ID:          uid,
-			Name:        name,
-			Region:      region,
-			Country:     "Madagascar",
-			Coordinates: p.(*geom.Polygon).Coords(),
-		}, "", "  ")
-		fmt.Println(string(b))
-		return
-	}
+		if outputInJSON {
+			b, _ := json.MarshalIndent(District{
+				ID:          uid,
+				Name:        name,
+				Region:      region,
+				Country:     "Madagascar",
+				Coordinates: p.(*geom.Polygon).Coords(),
+			}, "", "  ")
+			fmt.Println(string(b))
+			return
+		}
 
-	fmt.Printf(`
+		fmt.Printf(`
         id
                 %s
         name
@@ -103,4 +103,5 @@ func (d *DistrictService) ShowDistrict(id string, outputInJSON bool) {
         geometry
                 %v
 	`, uid, name, region, p.(*geom.Polygon).Coords())
+	}
 }

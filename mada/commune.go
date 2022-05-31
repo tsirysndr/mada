@@ -72,26 +72,26 @@ func (c *CommuneService) ShowCommune(id string, outputInJSON bool) {
 	rows, _ := c.db.Query("SELECT uid, name, region, district, country, ST_AsText(geom) FROM commune WHERE uid = $1", id)
 	defer rows.Close()
 	var uid, name, region, district, country, g string
-	rows.Next()
-	rows.Scan(&uid, &name, &region, &district, &country, &g)
+	for rows.Next() {
+		rows.Scan(&uid, &name, &region, &district, &country, &g)
 
-	p, _ := wkt.Unmarshal(g)
+		p, _ := wkt.Unmarshal(g)
 
-	if outputInJSON {
-		b, _ := json.MarshalIndent(Commune{
-			ID:          uid,
-			Name:        name,
-			Region:      region,
-			District:    district,
-			Country:     country,
-			Coordinates: p.(*geom.Polygon).Coords(),
-		}, "", "  ")
+		if outputInJSON {
+			b, _ := json.MarshalIndent(Commune{
+				ID:          uid,
+				Name:        name,
+				Region:      region,
+				District:    district,
+				Country:     country,
+				Coordinates: p.(*geom.Polygon).Coords(),
+			}, "", "  ")
 
-		fmt.Println(string(b))
-		return
-	}
+			fmt.Println(string(b))
+			return
+		}
 
-	fmt.Printf(`
+		fmt.Printf(`
         id
                 %s
         name
@@ -108,4 +108,5 @@ func (c *CommuneService) ShowCommune(id string, outputInJSON bool) {
         geometry
                 %v
 	`, uid, name, district, region, p.(*geom.Polygon).Coords())
+	}
 }

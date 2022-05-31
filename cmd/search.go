@@ -51,13 +51,28 @@ to quickly create a Cobra application.`,
 			return
 		}
 		outputInJSON, _ := cmd.Flags().GetBool("json")
-		mada.Search(args[0], outputInJSON)
+		searchForFokontany, _ := cmd.Flags().GetBool("fokontany")
+		searchForCommune, _ := cmd.Flags().GetBool("commune")
+		searchForDistrict, _ := cmd.Flags().GetBool("district")
+		searchForRegion, _ := cmd.Flags().GetBool("region")
+		options := mada.SearchOptions{
+			OutputInJSON:       outputInJSON,
+			SearchForFokontany: searchForFokontany,
+			SearchForCommune:   searchForCommune,
+			SearchForDistrict:  searchForDistrict,
+			SearchForRegion:    searchForRegion,
+		}
+		mada.Search(args[0], options)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(searchCmd)
 	searchCmd.Flags().BoolP("json", "j", false, "Output in JSON format")
+	searchCmd.Flags().BoolP("fokontany", "f", false, "Search for a fokontany")
+	searchCmd.Flags().BoolP("commune", "c", false, "Search for a commune")
+	searchCmd.Flags().BoolP("district", "d", false, "Search for a district")
+	searchCmd.Flags().BoolP("region", "r", false, "Search for a region")
 
 	// Here you will define your flags and configuration settings.
 

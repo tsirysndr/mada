@@ -70,18 +70,18 @@ func (r *RegionService) ShowRegion(id string, outputInJSON bool) {
 	rows, _ := r.db.Query("SELECT uid, name, ST_AsText(geom) FROM region WHERE uid = $1", id)
 	defer rows.Close()
 	var uid, name, g string
-	rows.Next()
-	rows.Scan(&uid, &name, &g)
+	for rows.Next() {
+		rows.Scan(&uid, &name, &g)
 
-	p, _ := wkt.Unmarshal(g)
+		p, _ := wkt.Unmarshal(g)
 
-	if outputInJSON {
-		b, _ := json.MarshalIndent(Region{ID: uid, Name: name, Country: "Madagascar", Coordinates: p.(*geom.Polygon).Coords()}, "", "  ")
-		fmt.Println(string(b))
-		return
-	}
+		if outputInJSON {
+			b, _ := json.MarshalIndent(Region{ID: uid, Name: name, Country: "Madagascar", Coordinates: p.(*geom.Polygon).Coords()}, "", "  ")
+			fmt.Println(string(b))
+			return
+		}
 
-	fmt.Printf(`
+		fmt.Printf(`
         id
                 %s
         name
@@ -93,4 +93,5 @@ func (r *RegionService) ShowRegion(id string, outputInJSON bool) {
         geometry
                %v
 	`, uid, name, p.(*geom.Polygon).Coords())
+	}
 }

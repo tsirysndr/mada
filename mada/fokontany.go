@@ -76,43 +76,44 @@ func (f *FokontanyService) ShowFokontany(id string, outputInJSON bool) {
 		log.Fatal(err)
 	}
 	defer rows.Close()
+
 	var uid, name, commune, district, region, country, g string
-	rows.Next()
-	rows.Scan(&uid, &name, &commune, &region, &district, &country, &g)
+	for rows.Next() {
+		rows.Scan(&uid, &name, &commune, &region, &district, &country, &g)
 
-	p, _ := wkt.Unmarshal(g)
+		p, _ := wkt.Unmarshal(g)
 
-	if outputInJSON {
-		b, _ := json.MarshalIndent(Fokontany{
-			ID:          uid,
-			Name:        name,
-			Commune:     commune,
-			Region:      region,
-			District:    district,
-			Country:     country,
-			Coordinates: p.(*geom.Polygon).Coords(),
-		}, "", "  ")
-		fmt.Println(string(b))
-		return
+		if outputInJSON {
+			b, _ := json.MarshalIndent(Fokontany{
+				ID:          uid,
+				Name:        name,
+				Commune:     commune,
+				Region:      region,
+				District:    district,
+				Country:     country,
+				Coordinates: p.(*geom.Polygon).Coords(),
+			}, "", "  ")
+			fmt.Println(string(b))
+			return
+		}
+		fmt.Printf(`
+					id
+									%s
+					name
+									%s
+					commune
+									%s
+					district
+									%s
+					region
+									%s
+          country
+									%s
+					type
+									fokontany
+					geometry
+									%v
+		`, uid, name, commune, district, region, country, p.(*geom.Polygon).Coords())
+
 	}
-	fmt.Printf(`
-        id
-                %s
-        name
-                %s
-        commune
-                %s
-        district
-                %s
-        region
-                %s
-				country
-                %s
-        type
-                fokontany
-        country
-                Madagascar
-        geometry
-                %v
-	`, uid, name, commune, region, district, country, p.(*geom.Polygon).Coords())
 }
