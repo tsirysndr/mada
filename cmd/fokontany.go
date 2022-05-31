@@ -48,6 +48,7 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		id, _ := cmd.Flags().GetString("id")
 		outputInJSON, _ := cmd.Flags().GetBool("json")
+		skip, _ := cmd.Flags().GetInt("skip")
 		limit, _ := cmd.Flags().GetInt("limit")
 
 		f := mada.NewFokontanyService()
@@ -57,13 +58,14 @@ to quickly create a Cobra application.`,
 			return
 		}
 
-		f.List(outputInJSON, limit)
+		f.List(outputInJSON, skip, limit)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(fokontanyCmd)
 	fokontanyCmd.Flags().BoolP("json", "j", false, "Output in JSON format")
+	fokontanyCmd.Flags().IntP("skip", "s", 0, "Skip first n fokontany")
 	fokontanyCmd.Flags().IntP("limit", "l", 100, "Limit the number of communes")
 	fokontanyCmd.Flags().StringP("id", "i", "", "Fokontany ID")
 

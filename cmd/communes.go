@@ -56,15 +56,17 @@ to quickly create a Cobra application.`,
 			return
 		}
 
+		skip, _ := cmd.Flags().GetInt("skip")
 		limit, _ := cmd.Flags().GetInt("limit")
 
-		c.List(outputInJSON, limit)
+		c.List(outputInJSON, skip, limit)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(communesCmd)
 	communesCmd.Flags().BoolP("json", "j", false, "Output in JSON format")
+	communesCmd.Flags().IntP("skip", "s", 0, "Skip first n communes")
 	communesCmd.Flags().IntP("limit", "l", 100, "Limit the number of communes")
 	communesCmd.Flags().StringP("id", "i", "", "Commune ID")
 

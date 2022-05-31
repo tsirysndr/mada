@@ -42,7 +42,7 @@ func NewCommuneService() *CommuneService {
 	return &CommuneService{db: db}
 }
 
-func (c *CommuneService) List(outputInJSON bool, limit int) {
+func (c *CommuneService) List(outputInJSON bool, skip, limit int) {
 	index, err := InitializeBleve()
 	if err != nil {
 		panic(err)
@@ -50,6 +50,7 @@ func (c *CommuneService) List(outputInJSON bool, limit int) {
 	query := bleve.NewMatchQuery("commune")
 	search := bleve.NewSearchRequest(query)
 	search.Fields = []string{"*"}
+	search.From = skip
 	search.Size = limit
 
 	searchResults, err := index.Search(search)

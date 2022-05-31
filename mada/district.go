@@ -41,7 +41,7 @@ func NewDistrictService() *DistrictService {
 	return &DistrictService{db: db}
 }
 
-func (d *DistrictService) List(outputInJSON bool, limit int) {
+func (d *DistrictService) List(outputInJSON bool, skip, limit int) {
 	index, err := InitializeBleve()
 	if err != nil {
 		panic(err)
@@ -49,6 +49,7 @@ func (d *DistrictService) List(outputInJSON bool, limit int) {
 	query := bleve.NewMatchQuery("district")
 	search := bleve.NewSearchRequest(query)
 	search.Fields = []string{"*"}
+	search.From = skip
 	search.Size = limit
 
 	searchResults, err := index.Search(search)

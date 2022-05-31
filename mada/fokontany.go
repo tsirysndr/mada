@@ -44,7 +44,7 @@ func NewFokontanyService() *FokontanyService {
 	return &FokontanyService{db: db}
 }
 
-func (f *FokontanyService) List(outputInJSON bool, limit int) {
+func (f *FokontanyService) List(outputInJSON bool, skip, limit int) {
 	index, err := InitializeBleve()
 	if err != nil {
 		panic(err)
@@ -52,6 +52,7 @@ func (f *FokontanyService) List(outputInJSON bool, limit int) {
 	query := bleve.NewMatchQuery("fokontany")
 	search := bleve.NewSearchRequest(query)
 	search.Fields = []string{"*"}
+	search.From = skip
 	search.Size = limit
 
 	searchResults, err := index.Search(search)

@@ -40,7 +40,7 @@ func NewRegionService() *RegionService {
 	return &RegionService{db: db}
 }
 
-func (r *RegionService) List(outputInJSON bool, limit int) {
+func (r *RegionService) List(outputInJSON bool, skip, limit int) {
 	index, err := InitializeBleve()
 	if err != nil {
 		panic(err)
@@ -48,6 +48,7 @@ func (r *RegionService) List(outputInJSON bool, limit int) {
 	query := bleve.NewMatchQuery("region")
 	search := bleve.NewSearchRequest(query)
 	search.Fields = []string{"*"}
+	search.From = skip
 	search.Size = limit
 
 	searchResults, err := index.Search(search)
