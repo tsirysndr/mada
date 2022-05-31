@@ -7,6 +7,12 @@ Mada is a CLI that facilitates the search for regions, districts, communes and f
 
 ## 🚚 Installation
 
+You need to install libspatialite before continuing
+```bash
+# For Ubuntu
+sudo apt install libsqlite3-mod-spatialite
+```
+
 ```bash
 go install -v github.com/tsirysndr/mada@latest
 ```
