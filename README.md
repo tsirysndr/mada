@@ -11,6 +11,9 @@ You need to install libspatialite before continuing
 ```bash
 # For Ubuntu
 sudo apt install libsqlite3-mod-spatialite
+
+# For Android (Termux)
+pkg install libspatialite
 ```
 
 ```bash
@@ -18,6 +21,8 @@ go install -v github.com/tsirysndr/mada@latest
 ```
 
 ## 🚀 Usage
+
+If you want to use postgresql (with postgis extension) instead of sqlite (with spatialite), add the environment variable MADA_POSTGRES_URL, for example ``export MADA_POSTGRES_URL=postgres://postgres@localhost:5432/mada?sslmode=disable``
 
 ```bash
 ~> mada search miaramasoandro
