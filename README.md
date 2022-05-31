@@ -22,9 +22,10 @@ go install -v github.com/tsirysndr/mada@latest
 
 ## 🚀 Usage
 
-If you want to use postgresql (with postgis extension) instead of sqlite (with spatialite), add the environment variable MADA_POSTGRES_URL, for example ``export MADA_POSTGRES_URL=postgres://postgres@localhost:5432/mada?sslmode=disable``
-
 ```bash
+# execute mada init at first launch to initialize the database
+~> mada init
+# Now you can search fokontany, commune, district or region
 ~> mada search miaramasoandro
 
 4 matches, showing 1 through 4, took 237.941µs
@@ -96,5 +97,6 @@ If you want to use postgresql (with postgis extension) instead of sqlite (with s
                 Mahazoarivo Avarabohitra
         country
                 Madagascar
-
 ```
+
+If you want to use postgresql (with postgis extension) instead of sqlite (with spatialite), add the environment variable MADA_POSTGRES_URL, for example ``export MADA_POSTGRES_URL=postgres://postgres@localhost:5432/mada?sslmode=disable``
