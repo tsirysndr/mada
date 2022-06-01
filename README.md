@@ -27,6 +27,16 @@ go install -v github.com/tsirysndr/mada@latest
 
 ## 🚀 Usage
 
+With Docker:
+```bash
+# execute mada init at first launch to initialize the database
+docker run -v `pwd`/mada:"/root/.mada" -it tsiry/mada mada init
+# Now you can search fokontany, commune, district or region
+docker run -v `pwd`/mada:"/root/.mada" -it tsiry/mada mada search
+```
+
+Without Docker:
+
 ```bash
 # execute mada init at first launch to initialize the database
 ~> mada init
