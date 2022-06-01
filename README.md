@@ -33,7 +33,7 @@ With Docker:
 docker run -v `pwd`/mada:"/root/.mada" -it tsiry/mada mada init
 # Now you can search fokontany, commune, district or region
 docker run -v `pwd`/mada:"/root/.mada" -it tsiry/mada mada search miaramasoandro
-# Search location 
+# Search location (encoded in Open Location Code)
 docker run -v `pwd`/mada:"/root/.mada" -it tsiry/mada mada search "5HH94GJH+H7"
 ```
 
