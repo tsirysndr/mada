@@ -13,6 +13,7 @@ import (
 )
 
 type Fokontany struct {
+	Point       geom.Coord     `json:"point,omitempty"`
 	ID          string         `json:"id"`
 	Name        string         `json:"name"`
 	Commune     string         `json:"commune"`

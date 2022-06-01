@@ -18,6 +18,7 @@ type Commune struct {
 	District    string         `json:"district"`
 	Country     string         `json:"country"`
 	Coordinates [][]geom.Coord `json:"coordinates"`
+	Point       geom.Coord     `json:"point,omitempty"`
 }
 
 type CommuneService struct {

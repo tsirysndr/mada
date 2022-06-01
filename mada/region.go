@@ -16,6 +16,7 @@ type Region struct {
 	Name        string         `json:"name"`
 	Country     string         `json:"country"`
 	Coordinates [][]geom.Coord `json:"coordinates"`
+	Point       geom.Coord     `json:"point,omitempty"`
 }
 
 type RegionService struct {

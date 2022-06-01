@@ -125,11 +125,14 @@ func searchInFokontany(db *sql.DB, area olc.CodeArea, opt SearchOptions) bool {
 				District:    district,
 				Country:     country,
 				Coordinates: p.(*geom.Polygon).Coords(),
+				Point:       geom.NewPoint(geom.XY).MustSetCoords(geom.Coord{area.LngLo, area.LatLo}).Coords(),
 			}, "", "  ")
 			fmt.Println(string(b))
 			return noresults
 		}
 		fmt.Printf(`
+        point
+                %v
         id
                 %s
         name
@@ -146,7 +149,7 @@ func searchInFokontany(db *sql.DB, area olc.CodeArea, opt SearchOptions) bool {
                 fokontany
         geometry
                 %v
-	`, uid, name, commune, district, region, country, p.(*geom.Polygon).Coords())
+	`, geom.NewPoint(geom.XY).MustSetCoords(geom.Coord{area.LngLo, area.LatLo}).Coords(), uid, name, commune, district, region, country, p.(*geom.Polygon).Coords())
 
 	}
 	return noresults
@@ -175,11 +178,14 @@ func searchInCommune(db *sql.DB, area olc.CodeArea, opt SearchOptions) bool {
 				District:    district,
 				Country:     country,
 				Coordinates: p.(*geom.Polygon).Coords(),
+				Point:       geom.NewPoint(geom.XY).MustSetCoords(geom.Coord{area.LngLo, area.LatLo}).Coords(),
 			}, "", "  ")
 			fmt.Println(string(b))
 			return noresults
 		}
 		fmt.Printf(`
+        point
+                %v
         id
                 %s
         name
@@ -194,7 +200,15 @@ func searchInCommune(db *sql.DB, area olc.CodeArea, opt SearchOptions) bool {
                 commune
         geometry
                 %v
-	`, uid, name, district, region, country, p.(*geom.Polygon).Coords())
+	`,
+			geom.NewPoint(geom.XY).MustSetCoords(geom.Coord{area.LngLo, area.LatLo}).Coords(),
+			uid,
+			name,
+			district,
+			region,
+			country,
+			p.(*geom.Polygon).Coords(),
+		)
 
 	}
 	return noresults
@@ -222,11 +236,14 @@ func searchInDistrict(db *sql.DB, area olc.CodeArea, opt SearchOptions) bool {
 				Region:      region,
 				Country:     country,
 				Coordinates: p.(*geom.Polygon).Coords(),
+				Point:       geom.NewPoint(geom.XY).MustSetCoords(geom.Coord{area.LngLo, area.LatLo}).Coords(),
 			}, "", "  ")
 			fmt.Println(string(b))
 			return noresults
 		}
 		fmt.Printf(`
+        point
+                %v
         id
                 %s
         name
@@ -239,7 +256,14 @@ func searchInDistrict(db *sql.DB, area olc.CodeArea, opt SearchOptions) bool {
                 district
         geometry
                 %v
-	`, uid, name, region, country, p.(*geom.Polygon).Coords())
+	`,
+			geom.NewPoint(geom.XY).MustSetCoords(geom.Coord{area.LngLo, area.LatLo}).Coords(),
+			uid,
+			name,
+			region,
+			country,
+			p.(*geom.Polygon).Coords(),
+		)
 
 	}
 	return noresults
@@ -266,11 +290,14 @@ func searchInRegion(db *sql.DB, area olc.CodeArea, opt SearchOptions) bool {
 				Name:        name,
 				Country:     country,
 				Coordinates: p.(*geom.Polygon).Coords(),
+				Point:       geom.NewPoint(geom.XY).MustSetCoords(geom.Coord{area.LngLo, area.LatLo}).Coords(),
 			}, "", "  ")
 			fmt.Println(string(b))
 			return noresults
 		}
 		fmt.Printf(`
+	      point
+	              %v
         id
                 %s
         name
@@ -281,7 +308,13 @@ func searchInRegion(db *sql.DB, area olc.CodeArea, opt SearchOptions) bool {
                 region
         geometry
                 %v
-	`, uid, name, country, p.(*geom.Polygon).Coords())
+	`,
+			geom.NewPoint(geom.XY).MustSetCoords(geom.Coord{area.LngLo, area.LatLo}).Coords(),
+			uid,
+			name,
+			country,
+			p.(*geom.Polygon).Coords(),
+		)
 
 	}
 	return noresults

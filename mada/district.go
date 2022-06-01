@@ -17,6 +17,7 @@ type District struct {
 	Region      string         `json:"region"`
 	Country     string         `json:"country"`
 	Coordinates [][]geom.Coord `json:"coordinates"`
+	Point       geom.Coord     `json:"point,omitempty"`
 }
 
 type DistrictService struct {
