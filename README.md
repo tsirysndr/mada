@@ -35,6 +35,8 @@ docker run -v `pwd`/mada:"/root/.mada" -it tsiry/mada mada init
 docker run -v `pwd`/mada:"/root/.mada" -it tsiry/mada mada search miaramasoandro
 # Search location (encoded in Open Location Code)
 docker run -v `pwd`/mada:"/root/.mada" -it tsiry/mada mada search "5HH94GJH+H7"
+# Open Web UI in the browser
+docker run -p 8010:8010 -v (pwd)/data:/root/.mada -it tsiry/mada
 ```
 
 Without Docker:
@@ -116,6 +118,8 @@ Without Docker:
                 Madagascar
 # Search location (encoded in Open Location Code)
 ~> mada search "5HH94GJH+H7"
+# Start Web UI in the browser
+~> mada ui
 ```
 
 If you want to use postgresql (with postgis extension) instead of sqlite (with spatialite), add the environment variable MADA_POSTGRES_URL, for example ``export MADA_POSTGRES_URL=postgres://postgres@localhost:5432/mada?sslmode=disable``
