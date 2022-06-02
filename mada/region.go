@@ -7,15 +7,16 @@ import (
 	"os"
 
 	"github.com/blevesearch/bleve/v2"
+	"github.com/pkg/browser"
 	"github.com/twpayne/go-geom"
 	"github.com/twpayne/go-geom/encoding/wkt"
 )
 
 type Region struct {
-	ID          string         `json:"id"`
-	Name        string         `json:"name"`
-	Country     string         `json:"country"`
-	Coordinates [][]geom.Coord `json:"coordinates"`
+	ID          string         `json:"id,omitempty"`
+	Name        string         `json:"name,omitempty"`
+	Country     string         `json:"country,omitempty"`
+	Coordinates [][]geom.Coord `json:"coordinates,omitempty"`
 	Point       geom.Coord     `json:"point,omitempty"`
 }
 
@@ -41,7 +42,7 @@ func NewRegionService() *RegionService {
 	return &RegionService{db: db}
 }
 
-func (r *RegionService) List(outputInJSON bool, skip, limit int) {
+func (r *RegionService) List(outputInJSON bool, skip, limit int, openInBrowser bool) {
 	index, err := InitializeBleve()
 	if err != nil {
 		panic(err)
@@ -58,6 +59,14 @@ func (r *RegionService) List(outputInJSON bool, skip, limit int) {
 		return
 	}
 
+	if openInBrowser {
+		err := browser.OpenURL("http://localhost:8010")
+		if err != nil {
+			fmt.Println("Open http://localhost:8010 in your browser")
+		}
+		StartHttpServer()
+	}
+
 	if !outputInJSON {
 		fmt.Println(searchResults)
 		return
@@ -68,12 +77,20 @@ func (r *RegionService) List(outputInJSON bool, skip, limit int) {
 	fmt.Println(string(b))
 }
 
-func (r *RegionService) ShowRegion(id string, outputInJSON bool) {
+func (r *RegionService) ShowRegion(id string, outputInJSON, openInBrowser bool) {
 	rows, _ := r.db.Query("SELECT uid, name, ST_AsText(geom) FROM region WHERE uid = $1", id)
 	defer rows.Close()
 	var uid, name, g string
 	for rows.Next() {
 		rows.Scan(&uid, &name, &g)
+
+		if openInBrowser {
+			err := browser.OpenURL("http://localhost:8010")
+			if err != nil {
+				fmt.Println("Open http://localhost:8010 in your browser")
+			}
+			StartHttpServer()
+		}
 
 		p, _ := wkt.Unmarshal(g)
 

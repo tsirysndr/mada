@@ -3,11 +3,22 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@apollo/client": "^3.6.6",
+    "@deck.gl/core": "^8.7.10",
+    "@deck.gl/layers": "^8.7.10",
+    "@deck.gl/mapbox": "^8.7.10",
+    "@deck.gl/react": "^8.7.10",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.2.0",
     "@testing-library/user-event": "^13.5.0",
+    "antd": "^4.20.7",
+    "graphql": "^16.5.0",
+    "mapbox-gl": "^2.8.2",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
+    "react-map-gl": "^7.0.15",
+    "react-md-spinner": "^1.0.0",
+    "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
@@ -27,7 +38,10 @@
     "production": [
       ">0.2%",
       "not dead",
-      "not op_mini all"
+      "not ie 11",
+      "not chrome < 51",
+      "not safari < 10",
+      "not android < 51"
     ],
     "development": [
       "last 1 chrome version",

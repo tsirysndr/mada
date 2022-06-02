@@ -38,7 +38,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const banner = `
+const Banner = `
 888b     d888               888                .d8888b.  888      8888888 
 8888b   d8888               888               d88P  Y88b 888        888   
 88888b.d88888               888               888    888 888        888   
@@ -53,7 +53,7 @@ const banner = `
 var rootCmd = &cobra.Command{
 	Use:   "mada",
 	Short: `Mada is a CLI that facilitates the search for regions, districts, communes and fokontany.`,
-	Long:  fmt.Sprintf("Mada is a CLI that facilitates the search for regions, districts, communes and fokontany.\n%s", color.CyanString(banner)),
+	Long:  fmt.Sprintf("Mada is a CLI that facilitates the search for regions, districts, communes and fokontany.\n%s", color.CyanString(Banner)),
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },

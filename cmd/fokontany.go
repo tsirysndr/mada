@@ -50,15 +50,16 @@ to quickly create a Cobra application.`,
 		outputInJSON, _ := cmd.Flags().GetBool("json")
 		skip, _ := cmd.Flags().GetInt("skip")
 		limit, _ := cmd.Flags().GetInt("limit")
+		openInBrowser, _ := cmd.Flags().GetBool("open")
 
 		f := mada.NewFokontanyService()
 
 		if id != "" {
-			f.ShowFokontany(id, outputInJSON)
+			f.ShowFokontany(id, outputInJSON, openInBrowser)
 			return
 		}
 
-		f.List(outputInJSON, skip, limit)
+		f.List(outputInJSON, skip, limit, openInBrowser)
 	},
 }
 
@@ -68,6 +69,7 @@ func init() {
 	fokontanyCmd.Flags().IntP("skip", "s", 0, "Skip first n fokontany")
 	fokontanyCmd.Flags().IntP("limit", "l", 100, "Limit the number of communes")
 	fokontanyCmd.Flags().StringP("id", "i", "", "Fokontany ID")
+	fokontanyCmd.Flags().BoolP("open", "o", false, "Open the result in the browser")
 
 	// Here you will define your flags and configuration settings.
 

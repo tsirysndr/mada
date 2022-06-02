@@ -7,16 +7,17 @@ import (
 	"os"
 
 	"github.com/blevesearch/bleve/v2"
+	"github.com/pkg/browser"
 	"github.com/twpayne/go-geom"
 	"github.com/twpayne/go-geom/encoding/wkt"
 )
 
 type District struct {
-	ID          string         `json:"id"`
-	Name        string         `json:"name"`
-	Region      string         `json:"region"`
-	Country     string         `json:"country"`
-	Coordinates [][]geom.Coord `json:"coordinates"`
+	ID          string         `json:"id,omitempty"`
+	Name        string         `json:"name,omitempty"`
+	Region      string         `json:"region,omitempty"`
+	Country     string         `json:"country,omitempty"`
+	Coordinates [][]geom.Coord `json:"coordinates,omitempty"`
 	Point       geom.Coord     `json:"point,omitempty"`
 }
 
@@ -42,7 +43,7 @@ func NewDistrictService() *DistrictService {
 	return &DistrictService{db: db}
 }
 
-func (d *DistrictService) List(outputInJSON bool, skip, limit int) {
+func (d *DistrictService) List(outputInJSON bool, skip, limit int, openInBrowser bool) {
 	index, err := InitializeBleve()
 	if err != nil {
 		panic(err)
@@ -59,6 +60,14 @@ func (d *DistrictService) List(outputInJSON bool, skip, limit int) {
 		return
 	}
 
+	if openInBrowser {
+		err := browser.OpenURL("http://localhost:8010")
+		if err != nil {
+			fmt.Println("Open http://localhost:8010 in your browser")
+		}
+		StartHttpServer()
+	}
+
 	if !outputInJSON {
 		fmt.Println(searchResults)
 		return
@@ -69,12 +78,20 @@ func (d *DistrictService) List(outputInJSON bool, skip, limit int) {
 	fmt.Println(string(b))
 }
 
-func (d *DistrictService) ShowDistrict(id string, outputInJSON bool) {
+func (d *DistrictService) ShowDistrict(id string, outputInJSON, openInBrowser bool) {
 	rows, _ := d.db.Query("SELECT uid, name, region, ST_AsText(geom) FROM district WHERE uid = $1", id)
 	defer rows.Close()
 	var uid, name, region, g string
 	for rows.Next() {
 		rows.Scan(&uid, &name, &region, &g)
+
+		if openInBrowser {
+			err := browser.OpenURL("http://localhost:8010")
+			if err != nil {
+				fmt.Println("Open http://localhost:8010 in your browser")
+			}
+			StartHttpServer()
+		}
 
 		p, _ := wkt.Unmarshal(g)
 

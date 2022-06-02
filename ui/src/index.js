@@ -1,14 +1,35 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import reportWebVitals from "./reportWebVitals";
+import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
+import { HashRouter, Route, Routes } from "react-router-dom";
+import Home from "./Containers/Home";
+import Region from "./Containers/Region";
+import District from "./Containers/District";
+import Commune from "./Containers/Commune";
+import Fokontany from "./Containers/Fokontany";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const client = new ApolloClient({
+  uri: process.env.REACT_APP_API_URL,
+  cache: new InMemoryCache(),
+});
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+  <ApolloProvider client={client}>
+    <React.StrictMode>
+      <HashRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/regions/:id" element={<Region />} />
+          <Route path="/districts/:id" element={<District />} />
+          <Route path="/communes" element={<Commune />} />
+          <Route path="/fokontany" element={<Fokontany />} />
+        </Routes>
+      </HashRouter>
+    </React.StrictMode>
+  </ApolloProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

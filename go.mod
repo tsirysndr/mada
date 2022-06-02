@@ -6,8 +6,14 @@ require (
 	github.com/blevesearch/bleve/v2 v2.3.2
 	github.com/everystreet/go-shapefile v1.0.0
 	github.com/fatih/color v1.13.0
+	github.com/go-chi/chi v1.5.4
+	github.com/go-chi/cors v1.2.1
+	github.com/google/open-location-code/go v0.0.0-20220120191843-cafb35c0d74d
+	github.com/lib/pq v1.10.6
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/mitchellh/go-homedir v1.1.0
+	github.com/pkg/browser v0.0.0-20210911075715-681adbf594b8
+	github.com/rakyll/statik v0.1.7
 	github.com/spf13/cobra v1.4.0
 	github.com/twpayne/go-geom v1.4.1
 )
@@ -33,9 +39,7 @@ require (
 	github.com/golang/geo v0.0.0-20210211234256-740aa86cb551 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
-	github.com/google/open-location-code/go v0.0.0-20220120191843-cafb35c0d74d // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
-	github.com/lib/pq v1.10.6 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect

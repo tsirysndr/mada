@@ -50,15 +50,16 @@ to quickly create a Cobra application.`,
 		outputInJSON, _ := cmd.Flags().GetBool("json")
 		skip, _ := cmd.Flags().GetInt("skip")
 		limit, _ := cmd.Flags().GetInt("limit")
+		openInBrowser, _ := cmd.Flags().GetBool("open")
 
 		r := mada.NewRegionService()
 
 		if id != "" {
-			r.ShowRegion(id, outputInJSON)
+			r.ShowRegion(id, outputInJSON, openInBrowser)
 			return
 		}
 
-		r.List(outputInJSON, skip, limit)
+		r.List(outputInJSON, skip, limit, openInBrowser)
 	},
 }
 
@@ -68,6 +69,7 @@ func init() {
 	regionsCmd.Flags().IntP("skip", "s", 0, "Skip first n results")
 	regionsCmd.Flags().IntP("limit", "l", 100, "Limit the number of communes")
 	regionsCmd.Flags().StringP("id", "i", "", "Region ID")
+	regionsCmd.Flags().BoolP("open", "o", false, "Open the result in the browser")
 
 	// Here you will define your flags and configuration settings.
 

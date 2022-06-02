@@ -8,19 +8,20 @@ import (
 	"os"
 
 	"github.com/blevesearch/bleve/v2"
+	"github.com/pkg/browser"
 	"github.com/twpayne/go-geom"
 	"github.com/twpayne/go-geom/encoding/wkt"
 )
 
 type Fokontany struct {
 	Point       geom.Coord     `json:"point,omitempty"`
-	ID          string         `json:"id"`
-	Name        string         `json:"name"`
-	Commune     string         `json:"commune"`
-	Region      string         `json:"region"`
-	District    string         `json:"district"`
-	Country     string         `json:"country"`
-	Coordinates [][]geom.Coord `json:"coordinates"`
+	ID          string         `json:"id,omitempty"`
+	Name        string         `json:"name,omitempty"`
+	Commune     string         `json:"commune,omitempty"`
+	Region      string         `json:"region,omitempty"`
+	District    string         `json:"district,omitempty"`
+	Country     string         `json:"country,omitempty"`
+	Coordinates [][]geom.Coord `json:"coordinates,omitempty"`
 }
 
 type FokontanyService struct {
@@ -45,7 +46,7 @@ func NewFokontanyService() *FokontanyService {
 	return &FokontanyService{db: db}
 }
 
-func (f *FokontanyService) List(outputInJSON bool, skip, limit int) {
+func (f *FokontanyService) List(outputInJSON bool, skip, limit int, openInBrowser bool) {
 	index, err := InitializeBleve()
 	if err != nil {
 		panic(err)
@@ -62,6 +63,14 @@ func (f *FokontanyService) List(outputInJSON bool, skip, limit int) {
 		return
 	}
 
+	if openInBrowser {
+		err := browser.OpenURL("http://localhost:8010")
+		if err != nil {
+			fmt.Println("Open http://localhost:8010 in your browser")
+		}
+		StartHttpServer()
+	}
+
 	if !outputInJSON {
 		fmt.Println(searchResults)
 		return
@@ -72,7 +81,7 @@ func (f *FokontanyService) List(outputInJSON bool, skip, limit int) {
 	fmt.Println(string(b))
 }
 
-func (f *FokontanyService) ShowFokontany(id string, outputInJSON bool) {
+func (f *FokontanyService) ShowFokontany(id string, outputInJSON, openInBrowser bool) {
 	rows, err := f.db.Query("SELECT uid, name, commune, region, district, country, ST_AsText(geom) FROM fokontany WHERE uid = $1", id)
 	if err != nil {
 		log.Fatal(err)
@@ -82,6 +91,14 @@ func (f *FokontanyService) ShowFokontany(id string, outputInJSON bool) {
 	var uid, name, commune, district, region, country, g string
 	for rows.Next() {
 		rows.Scan(&uid, &name, &commune, &region, &district, &country, &g)
+
+		if openInBrowser {
+			err := browser.OpenURL("http://localhost:8010")
+			if err != nil {
+				fmt.Println("Open http://localhost:8010 in your browser")
+			}
+			StartHttpServer()
+		}
 
 		p, _ := wkt.Unmarshal(g)
 

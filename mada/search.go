@@ -10,6 +10,7 @@ import (
 	"github.com/blevesearch/bleve/v2"
 	"github.com/blevesearch/bleve/v2/search/highlight/highlighter/ansi"
 	olc "github.com/google/open-location-code/go"
+	"github.com/pkg/browser"
 	"github.com/twpayne/go-geom"
 	"github.com/twpayne/go-geom/encoding/wkt"
 )
@@ -20,6 +21,7 @@ type SearchOptions struct {
 	SearchForCommune   bool
 	SearchForDistrict  bool
 	SearchForRegion    bool
+	OpenInBrowser      bool
 }
 
 func Search(term string, opt SearchOptions) {
@@ -44,6 +46,14 @@ func Search(term string, opt SearchOptions) {
 	if err != nil {
 		fmt.Println(err)
 		return
+	}
+
+	if opt.OpenInBrowser {
+		err := browser.OpenURL("http://localhost:8010")
+		if err != nil {
+			fmt.Println("Open http://localhost:8010 in your browser")
+		}
+		StartHttpServer()
 	}
 
 	if !opt.OutputInJSON {
@@ -114,6 +124,14 @@ func searchInFokontany(db *sql.DB, area olc.CodeArea, opt SearchOptions) bool {
 		noresults = false
 		rows.Scan(&uid, &name, &commune, &region, &district, &country, &g)
 
+		if opt.OpenInBrowser {
+			err := browser.OpenURL("http://localhost:8010")
+			if err != nil {
+				fmt.Println("Open http://localhost:8010 in your browser")
+			}
+			StartHttpServer()
+		}
+
 		p, _ := wkt.Unmarshal(g)
 
 		if opt.OutputInJSON {
@@ -167,6 +185,14 @@ func searchInCommune(db *sql.DB, area olc.CodeArea, opt SearchOptions) bool {
 	for rows.Next() {
 		noresults = false
 		rows.Scan(&uid, &name, &region, &district, &country, &g)
+
+		if opt.OpenInBrowser {
+			err := browser.OpenURL("http://localhost:8010")
+			if err != nil {
+				fmt.Println("Open http://localhost:8010 in your browser")
+			}
+			StartHttpServer()
+		}
 
 		p, _ := wkt.Unmarshal(g)
 
@@ -227,6 +253,14 @@ func searchInDistrict(db *sql.DB, area olc.CodeArea, opt SearchOptions) bool {
 		noresults = false
 		rows.Scan(&uid, &name, &region, &country, &g)
 
+		if opt.OpenInBrowser {
+			err := browser.OpenURL("http://localhost:8010")
+			if err != nil {
+				fmt.Println("Open http://localhost:8010 in your browser")
+			}
+			StartHttpServer()
+		}
+
 		p, _ := wkt.Unmarshal(g)
 
 		if opt.OutputInJSON {
@@ -281,6 +315,14 @@ func searchInRegion(db *sql.DB, area olc.CodeArea, opt SearchOptions) bool {
 	for rows.Next() {
 		noresults = false
 		rows.Scan(&uid, &name, &country, &g)
+
+		if opt.OpenInBrowser {
+			err := browser.OpenURL("http://localhost:8010")
+			if err != nil {
+				fmt.Println("Open http://localhost:8010 in your browser")
+			}
+			StartHttpServer()
+		}
 
 		p, _ := wkt.Unmarshal(g)
 

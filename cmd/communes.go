@@ -48,18 +48,19 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		id, _ := cmd.Flags().GetString("id")
 		outputInJSON, _ := cmd.Flags().GetBool("json")
+		openInBrowser, _ := cmd.Flags().GetBool("open")
 
 		c := mada.NewCommuneService()
 
 		if id != "" {
-			c.ShowCommune(id, outputInJSON)
+			c.ShowCommune(id, outputInJSON, openInBrowser)
 			return
 		}
 
 		skip, _ := cmd.Flags().GetInt("skip")
 		limit, _ := cmd.Flags().GetInt("limit")
 
-		c.List(outputInJSON, skip, limit)
+		c.List(outputInJSON, skip, limit, openInBrowser)
 	},
 }
 
@@ -69,6 +70,7 @@ func init() {
 	communesCmd.Flags().IntP("skip", "s", 0, "Skip first n communes")
 	communesCmd.Flags().IntP("limit", "l", 100, "Limit the number of communes")
 	communesCmd.Flags().StringP("id", "i", "", "Commune ID")
+	communesCmd.Flags().BoolP("open", "o", false, "Open the result in a browser")
 
 	// Here you will define your flags and configuration settings.
 
