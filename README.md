@@ -36,7 +36,7 @@ docker run -v `pwd`/mada:"/root/.mada" -it tsiry/mada mada search miaramasoandro
 # Search location (encoded in Open Location Code)
 docker run -v `pwd`/mada:"/root/.mada" -it tsiry/mada mada search "5HH94GJH+H7"
 # Open Web UI in your browser (http://localhost:8010)
-docker run -p 8010:8010 -v (pwd)/data:/root/.mada -it tsiry/mada
+docker run -p 8010:8010 -v `pwd`/data:"/root/.mada" -it tsiry/mada
 ```
 
 <img src="./web-preview.png" />
