@@ -60,9 +60,9 @@ func (r *RegionService) List(outputInJSON bool, skip, limit int, openInBrowser b
 	}
 
 	if openInBrowser {
-		err := browser.OpenURL("http://localhost:8010")
+		err := browser.OpenURL(fmt.Sprintf("http://localhost:%d", PORT))
 		if err != nil {
-			fmt.Println("Open http://localhost:8010 in your browser")
+			fmt.Printf("Open http://localhost:%d in your browser\n", PORT)
 		}
 		StartHttpServer()
 	}
@@ -85,9 +85,9 @@ func (r *RegionService) ShowRegion(id string, outputInJSON, openInBrowser bool) 
 		rows.Scan(&uid, &name, &g)
 
 		if openInBrowser {
-			err := browser.OpenURL("http://localhost:8010")
+			err := browser.OpenURL(fmt.Sprintf("http://localhost:%d", PORT))
 			if err != nil {
-				fmt.Println("Open http://localhost:8010 in your browser")
+				fmt.Printf("Open http://localhost:%d in your browser\n", PORT)
 			}
 			StartHttpServer()
 		}

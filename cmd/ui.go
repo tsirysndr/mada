@@ -42,7 +42,7 @@ import (
 // uiCmd represents the ui command
 var uiCmd = &cobra.Command{
 	Use:   "ui",
-	Short: "A brief description of your command",
+	Short: "Start the web UI and open it in your browser",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 

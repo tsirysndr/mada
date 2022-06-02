@@ -1,14 +1,21 @@
 package mada
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	"github.com/rakyll/statik/fs"
+	"github.com/tsirysndr/mada/graph"
+	"github.com/tsirysndr/mada/graph/generated"
 	_ "github.com/tsirysndr/mada/statik"
 )
+
+const PORT = 8010
 
 func StartHttpServer() {
 	statikFS, _ := fs.New()
@@ -26,10 +33,18 @@ func StartHttpServer() {
 		AllowCredentials: true,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	})
+
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+
+	log.Println("🚀 Starting server on port", PORT)
+	log.Printf("🚀 Connect to http://localhost:%d/playground for GraphQL playground", PORT)
+
 	router.Use(corsMiddleware.Handler)
 	router.Handle("/", http.FileServer(statikFS))
+	router.Handle("/playground", playground.Handler("GraphQL playground", "/query"))
+	router.Handle("/query", srv)
 	router.Handle("/*", http.FileServer(statikFS))
-	err := http.ListenAndServe("0.0.0.0:8010", router)
+	err := http.ListenAndServe(fmt.Sprintf("0.0.0.0:%d", PORT), router)
 	if err != nil {
 		log.Fatal(err)
 	}

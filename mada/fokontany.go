@@ -64,9 +64,9 @@ func (f *FokontanyService) List(outputInJSON bool, skip, limit int, openInBrowse
 	}
 
 	if openInBrowser {
-		err := browser.OpenURL("http://localhost:8010")
+		err := browser.OpenURL(fmt.Sprintf("http://localhost:%d", PORT))
 		if err != nil {
-			fmt.Println("Open http://localhost:8010 in your browser")
+			fmt.Printf("Open http://localhost:%d in your browser\n", PORT)
 		}
 		StartHttpServer()
 	}
@@ -93,9 +93,9 @@ func (f *FokontanyService) ShowFokontany(id string, outputInJSON, openInBrowser 
 		rows.Scan(&uid, &name, &commune, &region, &district, &country, &g)
 
 		if openInBrowser {
-			err := browser.OpenURL("http://localhost:8010")
+			err := browser.OpenURL(fmt.Sprintf("http://localhost:%d", PORT))
 			if err != nil {
-				fmt.Println("Open http://localhost:8010 in your browser")
+				fmt.Printf("Open http://localhost:%d in your browser\n", PORT)
 			}
 			StartHttpServer()
 		}

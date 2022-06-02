@@ -61,9 +61,9 @@ func (d *DistrictService) List(outputInJSON bool, skip, limit int, openInBrowser
 	}
 
 	if openInBrowser {
-		err := browser.OpenURL("http://localhost:8010")
+		err := browser.OpenURL(fmt.Sprintf("http://localhost:%d", PORT))
 		if err != nil {
-			fmt.Println("Open http://localhost:8010 in your browser")
+			fmt.Printf("Open http://localhost:%d in your browser\n", PORT)
 		}
 		StartHttpServer()
 	}
@@ -86,9 +86,9 @@ func (d *DistrictService) ShowDistrict(id string, outputInJSON, openInBrowser bo
 		rows.Scan(&uid, &name, &region, &g)
 
 		if openInBrowser {
-			err := browser.OpenURL("http://localhost:8010")
+			err := browser.OpenURL(fmt.Sprintf("http://localhost:%d", PORT))
 			if err != nil {
-				fmt.Println("Open http://localhost:8010 in your browser")
+				fmt.Printf("Open http://localhost:%d in your browser\n", PORT)
 			}
 			StartHttpServer()
 		}

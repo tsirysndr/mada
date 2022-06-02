@@ -49,9 +49,9 @@ func Search(term string, opt SearchOptions) {
 	}
 
 	if opt.OpenInBrowser {
-		err := browser.OpenURL("http://localhost:8010")
+		err := browser.OpenURL(fmt.Sprintf("http://localhost:%d", PORT))
 		if err != nil {
-			fmt.Println("Open http://localhost:8010 in your browser")
+			fmt.Printf("Open http://localhost:%d in your browser\n", PORT)
 		}
 		StartHttpServer()
 	}
@@ -125,9 +125,9 @@ func searchInFokontany(db *sql.DB, area olc.CodeArea, opt SearchOptions) bool {
 		rows.Scan(&uid, &name, &commune, &region, &district, &country, &g)
 
 		if opt.OpenInBrowser {
-			err := browser.OpenURL("http://localhost:8010")
+			err := browser.OpenURL(fmt.Sprintf("http://localhost:%d", PORT))
 			if err != nil {
-				fmt.Println("Open http://localhost:8010 in your browser")
+				log.Printf("Open http://localhost:%d in your browser", PORT)
 			}
 			StartHttpServer()
 		}
@@ -187,9 +187,9 @@ func searchInCommune(db *sql.DB, area olc.CodeArea, opt SearchOptions) bool {
 		rows.Scan(&uid, &name, &region, &district, &country, &g)
 
 		if opt.OpenInBrowser {
-			err := browser.OpenURL("http://localhost:8010")
+			err := browser.OpenURL(fmt.Sprintf("http://localhost:%d", PORT))
 			if err != nil {
-				fmt.Println("Open http://localhost:8010 in your browser")
+				fmt.Printf("Open http://localhost:%d in your browser\n", PORT)
 			}
 			StartHttpServer()
 		}
@@ -254,9 +254,9 @@ func searchInDistrict(db *sql.DB, area olc.CodeArea, opt SearchOptions) bool {
 		rows.Scan(&uid, &name, &region, &country, &g)
 
 		if opt.OpenInBrowser {
-			err := browser.OpenURL("http://localhost:8010")
+			err := browser.OpenURL(fmt.Sprintf("http://localhost:%d", PORT))
 			if err != nil {
-				fmt.Println("Open http://localhost:8010 in your browser")
+				fmt.Printf("Open http://localhost:%d in your browser\n", PORT)
 			}
 			StartHttpServer()
 		}
@@ -317,9 +317,9 @@ func searchInRegion(db *sql.DB, area olc.CodeArea, opt SearchOptions) bool {
 		rows.Scan(&uid, &name, &country, &g)
 
 		if opt.OpenInBrowser {
-			err := browser.OpenURL("http://localhost:8010")
+			err := browser.OpenURL(fmt.Sprintf("http://localhost:%d", PORT))
 			if err != nil {
-				fmt.Println("Open http://localhost:8010 in your browser")
+				fmt.Printf("Open http://localhost:%d in your browser\n", PORT)
 			}
 			StartHttpServer()
 		}
