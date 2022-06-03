@@ -2,9 +2,92 @@
 
 package model
 
-type NewTodo struct {
-	Text   string `json:"text"`
-	UserID string `json:"userId"`
+type Commune struct {
+	ID       *string   `json:"id"`
+	Name     *string   `json:"name"`
+	Province *string   `json:"province"`
+	Code     *string   `json:"code"`
+	District *string   `json:"district"`
+	Region   *string   `json:"region"`
+	Geometry *Geometry `json:"geometry"`
+}
+
+type CommuneList struct {
+	Data  []*Commune `json:"data"`
+	After *Commune   `json:"after"`
+}
+
+type Country struct {
+	ID       *string       `json:"id"`
+	Name     *string       `json:"name"`
+	Code     *string       `json:"code"`
+	Geometry *MultiPolygon `json:"geometry"`
+}
+
+type District struct {
+	ID       *string   `json:"id"`
+	Name     *string   `json:"name"`
+	Province *string   `json:"province"`
+	Code     *string   `json:"code"`
+	Region   *string   `json:"region"`
+	Geometry *Geometry `json:"geometry"`
+}
+
+type DistrictList struct {
+	Data  []*District `json:"data"`
+	After *District   `json:"after"`
+}
+
+type Fokontany struct {
+	ID       *string   `json:"id"`
+	Name     *string   `json:"name"`
+	Province *string   `json:"province"`
+	Code     *string   `json:"code"`
+	Commune  *string   `json:"commune"`
+	District *string   `json:"district"`
+	Region   *string   `json:"region"`
+	Geometry *Geometry `json:"geometry"`
+}
+
+type FokontanyList struct {
+	Data  []*Fokontany `json:"data"`
+	After *Fokontany   `json:"after"`
+}
+
+type Geometry struct {
+	Type         *string       `json:"type"`
+	Polygon      *Polygon      `json:"polygon"`
+	Multipolygon *MultiPolygon `json:"multipolygon"`
+}
+
+type MultiPolygon struct {
+	Type        *string          `json:"type"`
+	Coordinates [][][][]*float64 `json:"coordinates"`
+}
+
+type Polygon struct {
+	Type        *string        `json:"type"`
+	Coordinates [][][]*float64 `json:"coordinates"`
+}
+
+type Region struct {
+	ID       *string   `json:"id"`
+	Name     *string   `json:"name"`
+	Province *string   `json:"province"`
+	Code     *string   `json:"code"`
+	Geometry *Geometry `json:"geometry"`
+}
+
+type RegionList struct {
+	Data  []*Region `json:"data"`
+	After *Region   `json:"after"`
+}
+
+type Results struct {
+	Regions   []*Region    `json:"regions"`
+	Districts []*District  `json:"districts"`
+	Communes  []*Commune   `json:"communes"`
+	Fokontany []*Fokontany `json:"fokontany"`
 }
 
 type Todo struct {

@@ -33,6 +33,7 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 	"github.com/tsirysndr/mada/mada"
+	"github.com/tsirysndr/mada/types"
 )
 
 // searchCmd represents the search command
@@ -57,7 +58,7 @@ to quickly create a Cobra application.`,
 		searchForRegion, _ := cmd.Flags().GetBool("region")
 		openInBrowser, _ := cmd.Flags().GetBool("open")
 
-		options := mada.SearchOptions{
+		options := types.SearchOptions{
 			OutputInJSON:       outputInJSON,
 			SearchForFokontany: searchForFokontany,
 			SearchForCommune:   searchForCommune,
@@ -66,7 +67,23 @@ to quickly create a Cobra application.`,
 			OpenInBrowser:      openInBrowser,
 		}
 
-		mada.Search(args[0], options)
+		db, err := mada.OpenDatabaseConnection()
+		if err != nil {
+			panic(err)
+		}
+
+		index, err := mada.InitializeBleve()
+		if err != nil {
+			panic(err)
+		}
+
+		s := mada.NewSearchService(db, index)
+
+		result, err := s.Search(args[0], options)
+		if err != nil {
+			panic(err)
+		}
+		mada.FormatSearchResultOrOpenInBrowser(db, result, options)
 	},
 }
 

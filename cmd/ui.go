@@ -55,7 +55,11 @@ to quickly create a Cobra application.`,
 		if err != nil {
 			fmt.Println("Open http://localhost:8010 in your browser")
 		}
-		mada.StartHttpServer()
+		db, err := mada.OpenDatabaseConnection()
+		if err != nil {
+			panic(err)
+		}
+		mada.StartHttpServer(db)
 	},
 }
 

@@ -52,14 +52,32 @@ to quickly create a Cobra application.`,
 		limit, _ := cmd.Flags().GetInt("limit")
 		openInBrowser, _ := cmd.Flags().GetBool("open")
 
-		f := mada.NewFokontanyService()
+		db, err := mada.OpenDatabaseConnection()
+
+		if err != nil {
+			panic(err)
+		}
+
+		index, err := mada.InitializeBleve()
+		if err != nil {
+			panic(err)
+		}
+
+		f := mada.NewFokontanyService(db, index)
 
 		if id != "" {
-			f.ShowFokontany(id, outputInJSON, openInBrowser)
+			result, _ := f.ShowFokontany(id)
+			if result != nil {
+				mada.FormatOrOpenFokontanyInBrowser(db, result, openInBrowser, outputInJSON)
+			}
 			return
 		}
 
-		f.List(outputInJSON, skip, limit, openInBrowser)
+		result, err := f.List(skip, limit)
+		if err != nil {
+			panic(err)
+		}
+		mada.FormatResultOrOpenInBrowser(db, result, openInBrowser, outputInJSON)
 	},
 }
 

@@ -15,7 +15,6 @@ import (
 	"github.com/blevesearch/bleve/v2"
 	"github.com/everystreet/go-shapefile"
 	_ "github.com/lib/pq"
-	"github.com/mattn/go-sqlite3"
 	"github.com/mitchellh/go-homedir"
 	"github.com/twpayne/go-geom"
 )
@@ -114,27 +113,6 @@ func Init() (bleve.Index, error) {
 	}
 
 	return index, nil
-}
-
-func OpenSQLiteConnection() (*sql.DB, error) {
-	sql.Register("sqlite3_with_spatialite",
-		&sqlite3.SQLiteDriver{
-			Extensions: []string{"mod_spatialite"},
-		})
-
-	return sql.Open("sqlite3_with_spatialite", filepath.Join(CreateConfigDir(), "spatialmada.db"))
-}
-
-func OpenPostgresConnection() (*sql.DB, error) {
-	db, err := sql.Open("postgres", os.Getenv("MADA_POSTGRES_URL"))
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	db.Exec("CREATE EXTENSION postgis;")
-
-	return db, nil
 }
 
 func CreateOrOpenBleve() (bleve.Index, error) {

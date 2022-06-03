@@ -52,14 +52,32 @@ to quickly create a Cobra application.`,
 		limit, _ := cmd.Flags().GetInt("limit")
 		openInBrowser, _ := cmd.Flags().GetBool("open")
 
-		d := mada.NewDistrictService()
+		db, err := mada.OpenDatabaseConnection()
+
+		if err != nil {
+			panic(err)
+		}
+
+		index, err := mada.InitializeBleve()
+		if err != nil {
+			panic(err)
+		}
+
+		d := mada.NewDistrictService(db, index)
 
 		if id != "" {
-			d.ShowDistrict(id, outputInJSON, openInBrowser)
+			result, _ := d.ShowDistrict(id)
+			if result != nil {
+				mada.FormatOrOpenDistrictInBrowser(db, result, openInBrowser, outputInJSON)
+			}
 			return
 		}
 
-		d.List(outputInJSON, skip, limit, openInBrowser)
+		result, err := d.List(skip, limit)
+		if err != nil {
+			panic(err)
+		}
+		mada.FormatResultOrOpenInBrowser(db, result, openInBrowser, outputInJSON)
 	},
 }
 

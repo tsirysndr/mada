@@ -14,15 +14,114 @@ type User {
   name: String!
 }
 
-type Query {
-  todos: [Todo!]!
+
+
+type Commune {
+  id: ID
+  name: String
+  province: String
+  code: String
+  district: String
+  region: String
+  geometry: Geometry
 }
 
-input NewTodo {
-  text: String!
-  userId: String!
+type CommuneList {
+  data: [Commune]
+  after: Commune
 }
+
+type Country {
+  id: ID
+  name: String
+  code: String
+  geometry: MultiPolygon
+}
+
+type District {
+  id: ID
+  name: String
+  province: String
+  code: String
+  region: String
+  geometry: Geometry
+}
+
+type DistrictList {
+  data: [District]
+  after: District
+}
+
+type Fokontany {
+  id: ID
+  name: String
+  province: String
+  code: String
+  commune: String
+  district: String
+  region: String
+  geometry: Geometry
+}
+
+type FokontanyList {
+  data: [Fokontany]
+  after: Fokontany
+}
+
+type Geometry {
+  type: String
+  polygon: Polygon
+  multipolygon: MultiPolygon
+}
+
+type MultiPolygon {
+  type: String
+  coordinates: [[[[Float]]]]
+}
+
+type Polygon {
+  type: String
+  coordinates: [[[Float]]]
+}
+
+type Region {
+  id: ID
+  name: String
+  province: String
+  code: String
+  geometry: Geometry
+}
+
+type RegionList {
+  data: [Region]
+  after: Region
+}
+
+type Results {
+  regions: [Region]
+  districts: [District]
+  communes: [Commune]
+  fokontany: [Fokontany]
+}
+
+
+type Query {
+  commune(id: ID!): Commune
+  communes(after: ID, size: Int): CommuneList
+  countCommunes: Int
+  district(id: ID!): District
+  districts(after: ID, size: Int): DistrictList
+  countDistricts: Int
+  fokontany(id: ID!): Fokontany
+  allFokontany(after: ID, size: Int): FokontanyList
+  countFokontany: Int
+  region(id: ID!): Region
+  regions(after: ID, size: Int): RegionList
+  countRegions: Int
+  search(keyword: String!): Results
+}
+
 
 type Mutation {
-  createTodo(input: NewTodo!): Todo!
+  empty: String
 }

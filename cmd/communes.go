@@ -50,17 +50,35 @@ to quickly create a Cobra application.`,
 		outputInJSON, _ := cmd.Flags().GetBool("json")
 		openInBrowser, _ := cmd.Flags().GetBool("open")
 
-		c := mada.NewCommuneService()
+		db, err := mada.OpenDatabaseConnection()
+
+		if err != nil {
+			panic(err)
+		}
+
+		index, err := mada.InitializeBleve()
+		if err != nil {
+			panic(err)
+		}
+
+		c := mada.NewCommuneService(db, index)
 
 		if id != "" {
-			c.ShowCommune(id, outputInJSON, openInBrowser)
+			result, _ := c.ShowCommune(id)
+			if result != nil {
+				mada.FormatOrOpenCommuneInBrowser(db, result, openInBrowser, outputInJSON)
+			}
 			return
 		}
 
 		skip, _ := cmd.Flags().GetInt("skip")
 		limit, _ := cmd.Flags().GetInt("limit")
 
-		c.List(outputInJSON, skip, limit, openInBrowser)
+		result, err := c.List(skip, limit)
+		if err != nil {
+			panic(err)
+		}
+		mada.FormatResultOrOpenInBrowser(db, result, openInBrowser, outputInJSON)
 	},
 }
 

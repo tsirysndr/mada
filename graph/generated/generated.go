@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"strconv"
 	"sync"
-	"sync/atomic"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
@@ -44,12 +43,112 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	Commune struct {
+		Code     func(childComplexity int) int
+		District func(childComplexity int) int
+		Geometry func(childComplexity int) int
+		ID       func(childComplexity int) int
+		Name     func(childComplexity int) int
+		Province func(childComplexity int) int
+		Region   func(childComplexity int) int
+	}
+
+	CommuneList struct {
+		After func(childComplexity int) int
+		Data  func(childComplexity int) int
+	}
+
+	Country struct {
+		Code     func(childComplexity int) int
+		Geometry func(childComplexity int) int
+		ID       func(childComplexity int) int
+		Name     func(childComplexity int) int
+	}
+
+	District struct {
+		Code     func(childComplexity int) int
+		Geometry func(childComplexity int) int
+		ID       func(childComplexity int) int
+		Name     func(childComplexity int) int
+		Province func(childComplexity int) int
+		Region   func(childComplexity int) int
+	}
+
+	DistrictList struct {
+		After func(childComplexity int) int
+		Data  func(childComplexity int) int
+	}
+
+	Fokontany struct {
+		Code     func(childComplexity int) int
+		Commune  func(childComplexity int) int
+		District func(childComplexity int) int
+		Geometry func(childComplexity int) int
+		ID       func(childComplexity int) int
+		Name     func(childComplexity int) int
+		Province func(childComplexity int) int
+		Region   func(childComplexity int) int
+	}
+
+	FokontanyList struct {
+		After func(childComplexity int) int
+		Data  func(childComplexity int) int
+	}
+
+	Geometry struct {
+		Multipolygon func(childComplexity int) int
+		Polygon      func(childComplexity int) int
+		Type         func(childComplexity int) int
+	}
+
+	MultiPolygon struct {
+		Coordinates func(childComplexity int) int
+		Type        func(childComplexity int) int
+	}
+
 	Mutation struct {
-		CreateTodo func(childComplexity int, input model.NewTodo) int
+		Empty func(childComplexity int) int
+	}
+
+	Polygon struct {
+		Coordinates func(childComplexity int) int
+		Type        func(childComplexity int) int
 	}
 
 	Query struct {
-		Todos func(childComplexity int) int
+		AllFokontany   func(childComplexity int, after *string, size *int) int
+		Commune        func(childComplexity int, id string) int
+		Communes       func(childComplexity int, after *string, size *int) int
+		CountCommunes  func(childComplexity int) int
+		CountDistricts func(childComplexity int) int
+		CountFokontany func(childComplexity int) int
+		CountRegions   func(childComplexity int) int
+		District       func(childComplexity int, id string) int
+		Districts      func(childComplexity int, after *string, size *int) int
+		Fokontany      func(childComplexity int, id string) int
+		Region         func(childComplexity int, id string) int
+		Regions        func(childComplexity int, after *string, size *int) int
+		Search         func(childComplexity int, keyword string) int
+	}
+
+	Region struct {
+		Code     func(childComplexity int) int
+		Geometry func(childComplexity int) int
+		ID       func(childComplexity int) int
+		Name     func(childComplexity int) int
+		Province func(childComplexity int) int
+	}
+
+	RegionList struct {
+		After func(childComplexity int) int
+		Data  func(childComplexity int) int
+	}
+
+	Results struct {
+		Communes  func(childComplexity int) int
+		Districts func(childComplexity int) int
+		Fokontany func(childComplexity int) int
+		Regions   func(childComplexity int) int
 	}
 
 	Todo struct {
@@ -66,10 +165,22 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error)
+	Empty(ctx context.Context) (*string, error)
 }
 type QueryResolver interface {
-	Todos(ctx context.Context) ([]*model.Todo, error)
+	Commune(ctx context.Context, id string) (*model.Commune, error)
+	Communes(ctx context.Context, after *string, size *int) (*model.CommuneList, error)
+	CountCommunes(ctx context.Context) (*int, error)
+	District(ctx context.Context, id string) (*model.District, error)
+	Districts(ctx context.Context, after *string, size *int) (*model.DistrictList, error)
+	CountDistricts(ctx context.Context) (*int, error)
+	Fokontany(ctx context.Context, id string) (*model.Fokontany, error)
+	AllFokontany(ctx context.Context, after *string, size *int) (*model.FokontanyList, error)
+	CountFokontany(ctx context.Context) (*int, error)
+	Region(ctx context.Context, id string) (*model.Region, error)
+	Regions(ctx context.Context, after *string, size *int) (*model.RegionList, error)
+	CountRegions(ctx context.Context) (*int, error)
+	Search(ctx context.Context, keyword string) (*model.Results, error)
 }
 
 type executableSchema struct {
@@ -87,24 +198,491 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
-	case "Mutation.createTodo":
-		if e.complexity.Mutation.CreateTodo == nil {
+	case "Commune.code":
+		if e.complexity.Commune.Code == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_createTodo_args(context.TODO(), rawArgs)
+		return e.complexity.Commune.Code(childComplexity), true
+
+	case "Commune.district":
+		if e.complexity.Commune.District == nil {
+			break
+		}
+
+		return e.complexity.Commune.District(childComplexity), true
+
+	case "Commune.geometry":
+		if e.complexity.Commune.Geometry == nil {
+			break
+		}
+
+		return e.complexity.Commune.Geometry(childComplexity), true
+
+	case "Commune.id":
+		if e.complexity.Commune.ID == nil {
+			break
+		}
+
+		return e.complexity.Commune.ID(childComplexity), true
+
+	case "Commune.name":
+		if e.complexity.Commune.Name == nil {
+			break
+		}
+
+		return e.complexity.Commune.Name(childComplexity), true
+
+	case "Commune.province":
+		if e.complexity.Commune.Province == nil {
+			break
+		}
+
+		return e.complexity.Commune.Province(childComplexity), true
+
+	case "Commune.region":
+		if e.complexity.Commune.Region == nil {
+			break
+		}
+
+		return e.complexity.Commune.Region(childComplexity), true
+
+	case "CommuneList.after":
+		if e.complexity.CommuneList.After == nil {
+			break
+		}
+
+		return e.complexity.CommuneList.After(childComplexity), true
+
+	case "CommuneList.data":
+		if e.complexity.CommuneList.Data == nil {
+			break
+		}
+
+		return e.complexity.CommuneList.Data(childComplexity), true
+
+	case "Country.code":
+		if e.complexity.Country.Code == nil {
+			break
+		}
+
+		return e.complexity.Country.Code(childComplexity), true
+
+	case "Country.geometry":
+		if e.complexity.Country.Geometry == nil {
+			break
+		}
+
+		return e.complexity.Country.Geometry(childComplexity), true
+
+	case "Country.id":
+		if e.complexity.Country.ID == nil {
+			break
+		}
+
+		return e.complexity.Country.ID(childComplexity), true
+
+	case "Country.name":
+		if e.complexity.Country.Name == nil {
+			break
+		}
+
+		return e.complexity.Country.Name(childComplexity), true
+
+	case "District.code":
+		if e.complexity.District.Code == nil {
+			break
+		}
+
+		return e.complexity.District.Code(childComplexity), true
+
+	case "District.geometry":
+		if e.complexity.District.Geometry == nil {
+			break
+		}
+
+		return e.complexity.District.Geometry(childComplexity), true
+
+	case "District.id":
+		if e.complexity.District.ID == nil {
+			break
+		}
+
+		return e.complexity.District.ID(childComplexity), true
+
+	case "District.name":
+		if e.complexity.District.Name == nil {
+			break
+		}
+
+		return e.complexity.District.Name(childComplexity), true
+
+	case "District.province":
+		if e.complexity.District.Province == nil {
+			break
+		}
+
+		return e.complexity.District.Province(childComplexity), true
+
+	case "District.region":
+		if e.complexity.District.Region == nil {
+			break
+		}
+
+		return e.complexity.District.Region(childComplexity), true
+
+	case "DistrictList.after":
+		if e.complexity.DistrictList.After == nil {
+			break
+		}
+
+		return e.complexity.DistrictList.After(childComplexity), true
+
+	case "DistrictList.data":
+		if e.complexity.DistrictList.Data == nil {
+			break
+		}
+
+		return e.complexity.DistrictList.Data(childComplexity), true
+
+	case "Fokontany.code":
+		if e.complexity.Fokontany.Code == nil {
+			break
+		}
+
+		return e.complexity.Fokontany.Code(childComplexity), true
+
+	case "Fokontany.commune":
+		if e.complexity.Fokontany.Commune == nil {
+			break
+		}
+
+		return e.complexity.Fokontany.Commune(childComplexity), true
+
+	case "Fokontany.district":
+		if e.complexity.Fokontany.District == nil {
+			break
+		}
+
+		return e.complexity.Fokontany.District(childComplexity), true
+
+	case "Fokontany.geometry":
+		if e.complexity.Fokontany.Geometry == nil {
+			break
+		}
+
+		return e.complexity.Fokontany.Geometry(childComplexity), true
+
+	case "Fokontany.id":
+		if e.complexity.Fokontany.ID == nil {
+			break
+		}
+
+		return e.complexity.Fokontany.ID(childComplexity), true
+
+	case "Fokontany.name":
+		if e.complexity.Fokontany.Name == nil {
+			break
+		}
+
+		return e.complexity.Fokontany.Name(childComplexity), true
+
+	case "Fokontany.province":
+		if e.complexity.Fokontany.Province == nil {
+			break
+		}
+
+		return e.complexity.Fokontany.Province(childComplexity), true
+
+	case "Fokontany.region":
+		if e.complexity.Fokontany.Region == nil {
+			break
+		}
+
+		return e.complexity.Fokontany.Region(childComplexity), true
+
+	case "FokontanyList.after":
+		if e.complexity.FokontanyList.After == nil {
+			break
+		}
+
+		return e.complexity.FokontanyList.After(childComplexity), true
+
+	case "FokontanyList.data":
+		if e.complexity.FokontanyList.Data == nil {
+			break
+		}
+
+		return e.complexity.FokontanyList.Data(childComplexity), true
+
+	case "Geometry.multipolygon":
+		if e.complexity.Geometry.Multipolygon == nil {
+			break
+		}
+
+		return e.complexity.Geometry.Multipolygon(childComplexity), true
+
+	case "Geometry.polygon":
+		if e.complexity.Geometry.Polygon == nil {
+			break
+		}
+
+		return e.complexity.Geometry.Polygon(childComplexity), true
+
+	case "Geometry.type":
+		if e.complexity.Geometry.Type == nil {
+			break
+		}
+
+		return e.complexity.Geometry.Type(childComplexity), true
+
+	case "MultiPolygon.coordinates":
+		if e.complexity.MultiPolygon.Coordinates == nil {
+			break
+		}
+
+		return e.complexity.MultiPolygon.Coordinates(childComplexity), true
+
+	case "MultiPolygon.type":
+		if e.complexity.MultiPolygon.Type == nil {
+			break
+		}
+
+		return e.complexity.MultiPolygon.Type(childComplexity), true
+
+	case "Mutation.empty":
+		if e.complexity.Mutation.Empty == nil {
+			break
+		}
+
+		return e.complexity.Mutation.Empty(childComplexity), true
+
+	case "Polygon.coordinates":
+		if e.complexity.Polygon.Coordinates == nil {
+			break
+		}
+
+		return e.complexity.Polygon.Coordinates(childComplexity), true
+
+	case "Polygon.type":
+		if e.complexity.Polygon.Type == nil {
+			break
+		}
+
+		return e.complexity.Polygon.Type(childComplexity), true
+
+	case "Query.allFokontany":
+		if e.complexity.Query.AllFokontany == nil {
+			break
+		}
+
+		args, err := ec.field_Query_allFokontany_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateTodo(childComplexity, args["input"].(model.NewTodo)), true
+		return e.complexity.Query.AllFokontany(childComplexity, args["after"].(*string), args["size"].(*int)), true
 
-	case "Query.todos":
-		if e.complexity.Query.Todos == nil {
+	case "Query.commune":
+		if e.complexity.Query.Commune == nil {
 			break
 		}
 
-		return e.complexity.Query.Todos(childComplexity), true
+		args, err := ec.field_Query_commune_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Commune(childComplexity, args["id"].(string)), true
+
+	case "Query.communes":
+		if e.complexity.Query.Communes == nil {
+			break
+		}
+
+		args, err := ec.field_Query_communes_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Communes(childComplexity, args["after"].(*string), args["size"].(*int)), true
+
+	case "Query.countCommunes":
+		if e.complexity.Query.CountCommunes == nil {
+			break
+		}
+
+		return e.complexity.Query.CountCommunes(childComplexity), true
+
+	case "Query.countDistricts":
+		if e.complexity.Query.CountDistricts == nil {
+			break
+		}
+
+		return e.complexity.Query.CountDistricts(childComplexity), true
+
+	case "Query.countFokontany":
+		if e.complexity.Query.CountFokontany == nil {
+			break
+		}
+
+		return e.complexity.Query.CountFokontany(childComplexity), true
+
+	case "Query.countRegions":
+		if e.complexity.Query.CountRegions == nil {
+			break
+		}
+
+		return e.complexity.Query.CountRegions(childComplexity), true
+
+	case "Query.district":
+		if e.complexity.Query.District == nil {
+			break
+		}
+
+		args, err := ec.field_Query_district_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.District(childComplexity, args["id"].(string)), true
+
+	case "Query.districts":
+		if e.complexity.Query.Districts == nil {
+			break
+		}
+
+		args, err := ec.field_Query_districts_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Districts(childComplexity, args["after"].(*string), args["size"].(*int)), true
+
+	case "Query.fokontany":
+		if e.complexity.Query.Fokontany == nil {
+			break
+		}
+
+		args, err := ec.field_Query_fokontany_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Fokontany(childComplexity, args["id"].(string)), true
+
+	case "Query.region":
+		if e.complexity.Query.Region == nil {
+			break
+		}
+
+		args, err := ec.field_Query_region_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Region(childComplexity, args["id"].(string)), true
+
+	case "Query.regions":
+		if e.complexity.Query.Regions == nil {
+			break
+		}
+
+		args, err := ec.field_Query_regions_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Regions(childComplexity, args["after"].(*string), args["size"].(*int)), true
+
+	case "Query.search":
+		if e.complexity.Query.Search == nil {
+			break
+		}
+
+		args, err := ec.field_Query_search_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Search(childComplexity, args["keyword"].(string)), true
+
+	case "Region.code":
+		if e.complexity.Region.Code == nil {
+			break
+		}
+
+		return e.complexity.Region.Code(childComplexity), true
+
+	case "Region.geometry":
+		if e.complexity.Region.Geometry == nil {
+			break
+		}
+
+		return e.complexity.Region.Geometry(childComplexity), true
+
+	case "Region.id":
+		if e.complexity.Region.ID == nil {
+			break
+		}
+
+		return e.complexity.Region.ID(childComplexity), true
+
+	case "Region.name":
+		if e.complexity.Region.Name == nil {
+			break
+		}
+
+		return e.complexity.Region.Name(childComplexity), true
+
+	case "Region.province":
+		if e.complexity.Region.Province == nil {
+			break
+		}
+
+		return e.complexity.Region.Province(childComplexity), true
+
+	case "RegionList.after":
+		if e.complexity.RegionList.After == nil {
+			break
+		}
+
+		return e.complexity.RegionList.After(childComplexity), true
+
+	case "RegionList.data":
+		if e.complexity.RegionList.Data == nil {
+			break
+		}
+
+		return e.complexity.RegionList.Data(childComplexity), true
+
+	case "Results.communes":
+		if e.complexity.Results.Communes == nil {
+			break
+		}
+
+		return e.complexity.Results.Communes(childComplexity), true
+
+	case "Results.districts":
+		if e.complexity.Results.Districts == nil {
+			break
+		}
+
+		return e.complexity.Results.Districts(childComplexity), true
+
+	case "Results.fokontany":
+		if e.complexity.Results.Fokontany == nil {
+			break
+		}
+
+		return e.complexity.Results.Fokontany(childComplexity), true
+
+	case "Results.regions":
+		if e.complexity.Results.Regions == nil {
+			break
+		}
+
+		return e.complexity.Results.Regions(childComplexity), true
 
 	case "Todo.done":
 		if e.complexity.Todo.Done == nil {
@@ -155,9 +733,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	rc := graphql.GetOperationContext(ctx)
 	ec := executionContext{rc, e}
-	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
-		ec.unmarshalInputNewTodo,
-	)
+	inputUnmarshalMap := graphql.BuildUnmarshalerMap()
 	first := true
 
 	switch rc.Operation.Operation {
@@ -233,17 +809,116 @@ type User {
   name: String!
 }
 
-type Query {
-  todos: [Todo!]!
+
+
+type Commune {
+  id: ID
+  name: String
+  province: String
+  code: String
+  district: String
+  region: String
+  geometry: Geometry
 }
 
-input NewTodo {
-  text: String!
-  userId: String!
+type CommuneList {
+  data: [Commune]
+  after: Commune
 }
+
+type Country {
+  id: ID
+  name: String
+  code: String
+  geometry: MultiPolygon
+}
+
+type District {
+  id: ID
+  name: String
+  province: String
+  code: String
+  region: String
+  geometry: Geometry
+}
+
+type DistrictList {
+  data: [District]
+  after: District
+}
+
+type Fokontany {
+  id: ID
+  name: String
+  province: String
+  code: String
+  commune: String
+  district: String
+  region: String
+  geometry: Geometry
+}
+
+type FokontanyList {
+  data: [Fokontany]
+  after: Fokontany
+}
+
+type Geometry {
+  type: String
+  polygon: Polygon
+  multipolygon: MultiPolygon
+}
+
+type MultiPolygon {
+  type: String
+  coordinates: [[[[Float]]]]
+}
+
+type Polygon {
+  type: String
+  coordinates: [[[Float]]]
+}
+
+type Region {
+  id: ID
+  name: String
+  province: String
+  code: String
+  geometry: Geometry
+}
+
+type RegionList {
+  data: [Region]
+  after: Region
+}
+
+type Results {
+  regions: [Region]
+  districts: [District]
+  communes: [Commune]
+  fokontany: [Fokontany]
+}
+
+
+type Query {
+  commune(id: ID!): Commune
+  communes(after: ID, size: Int): CommuneList
+  countCommunes: Int
+  district(id: ID!): District
+  districts(after: ID, size: Int): DistrictList
+  countDistricts: Int
+  fokontany(id: ID!): Fokontany
+  allFokontany(after: ID, size: Int): FokontanyList
+  countFokontany: Int
+  region(id: ID!): Region
+  regions(after: ID, size: Int): RegionList
+  countRegions: Int
+  search(keyword: String!): Results
+}
+
 
 type Mutation {
-  createTodo(input: NewTodo!): Todo!
+  empty: String
 }
 `, BuiltIn: false},
 }
@@ -252,21 +927,6 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
-
-func (ec *executionContext) field_Mutation_createTodo_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 model.NewTodo
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewTodo2githubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐNewTodo(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-}
 
 func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -280,6 +940,177 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		}
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_allFokontany_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *string
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOID2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["size"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("size"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["size"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_commune_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_communes_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *string
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOID2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["size"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("size"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["size"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_district_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_districts_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *string
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOID2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["size"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("size"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["size"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_fokontany_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_region_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_regions_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *string
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOID2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["size"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("size"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["size"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_search_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["keyword"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("keyword"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["keyword"] = arg0
 	return args, nil
 }
 
@@ -321,8 +1152,8 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _Mutation_createTodo(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_createTodo(ctx, field)
+func (ec *executionContext) _Commune_id(ctx context.Context, field graphql.CollectedField, obj *model.Commune) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commune_id(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -335,41 +1166,1781 @@ func (ec *executionContext) _Mutation_createTodo(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateTodo(rctx, fc.Args["input"].(model.NewTodo))
+		return obj.ID, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Todo)
+	res := resTmp.(*string)
 	fc.Result = res
-	return ec.marshalNTodo2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐTodo(ctx, field.Selections, res)
+	return ec.marshalOID2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Mutation_createTodo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commune_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commune",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commune_name(ctx context.Context, field graphql.CollectedField, obj *model.Commune) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commune_name(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commune_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commune",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commune_province(ctx context.Context, field graphql.CollectedField, obj *model.Commune) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commune_province(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Province, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commune_province(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commune",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commune_code(ctx context.Context, field graphql.CollectedField, obj *model.Commune) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commune_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commune_code(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commune",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commune_district(ctx context.Context, field graphql.CollectedField, obj *model.Commune) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commune_district(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.District, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commune_district(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commune",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commune_region(ctx context.Context, field graphql.CollectedField, obj *model.Commune) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commune_region(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Region, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commune_region(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commune",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commune_geometry(ctx context.Context, field graphql.CollectedField, obj *model.Commune) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commune_geometry(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Geometry, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Geometry)
+	fc.Result = res
+	return ec.marshalOGeometry2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐGeometry(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commune_geometry(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commune",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "type":
+				return ec.fieldContext_Geometry_type(ctx, field)
+			case "polygon":
+				return ec.fieldContext_Geometry_polygon(ctx, field)
+			case "multipolygon":
+				return ec.fieldContext_Geometry_multipolygon(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Geometry", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CommuneList_data(ctx context.Context, field graphql.CollectedField, obj *model.CommuneList) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CommuneList_data(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Data, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Commune)
+	fc.Result = res
+	return ec.marshalOCommune2ᚕᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐCommune(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CommuneList_data(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CommuneList",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Commune_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Commune_name(ctx, field)
+			case "province":
+				return ec.fieldContext_Commune_province(ctx, field)
+			case "code":
+				return ec.fieldContext_Commune_code(ctx, field)
+			case "district":
+				return ec.fieldContext_Commune_district(ctx, field)
+			case "region":
+				return ec.fieldContext_Commune_region(ctx, field)
+			case "geometry":
+				return ec.fieldContext_Commune_geometry(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Commune", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CommuneList_after(ctx context.Context, field graphql.CollectedField, obj *model.CommuneList) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CommuneList_after(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.After, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Commune)
+	fc.Result = res
+	return ec.marshalOCommune2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐCommune(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CommuneList_after(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CommuneList",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Commune_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Commune_name(ctx, field)
+			case "province":
+				return ec.fieldContext_Commune_province(ctx, field)
+			case "code":
+				return ec.fieldContext_Commune_code(ctx, field)
+			case "district":
+				return ec.fieldContext_Commune_district(ctx, field)
+			case "region":
+				return ec.fieldContext_Commune_region(ctx, field)
+			case "geometry":
+				return ec.fieldContext_Commune_geometry(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Commune", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Country_id(ctx context.Context, field graphql.CollectedField, obj *model.Country) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Country_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOID2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Country_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Country",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Country_name(ctx context.Context, field graphql.CollectedField, obj *model.Country) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Country_name(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Country_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Country",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Country_code(ctx context.Context, field graphql.CollectedField, obj *model.Country) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Country_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Country_code(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Country",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Country_geometry(ctx context.Context, field graphql.CollectedField, obj *model.Country) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Country_geometry(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Geometry, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.MultiPolygon)
+	fc.Result = res
+	return ec.marshalOMultiPolygon2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐMultiPolygon(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Country_geometry(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Country",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "type":
+				return ec.fieldContext_MultiPolygon_type(ctx, field)
+			case "coordinates":
+				return ec.fieldContext_MultiPolygon_coordinates(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type MultiPolygon", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _District_id(ctx context.Context, field graphql.CollectedField, obj *model.District) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_District_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOID2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_District_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "District",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _District_name(ctx context.Context, field graphql.CollectedField, obj *model.District) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_District_name(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_District_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "District",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _District_province(ctx context.Context, field graphql.CollectedField, obj *model.District) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_District_province(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Province, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_District_province(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "District",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _District_code(ctx context.Context, field graphql.CollectedField, obj *model.District) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_District_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_District_code(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "District",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _District_region(ctx context.Context, field graphql.CollectedField, obj *model.District) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_District_region(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Region, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_District_region(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "District",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _District_geometry(ctx context.Context, field graphql.CollectedField, obj *model.District) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_District_geometry(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Geometry, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Geometry)
+	fc.Result = res
+	return ec.marshalOGeometry2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐGeometry(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_District_geometry(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "District",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "type":
+				return ec.fieldContext_Geometry_type(ctx, field)
+			case "polygon":
+				return ec.fieldContext_Geometry_polygon(ctx, field)
+			case "multipolygon":
+				return ec.fieldContext_Geometry_multipolygon(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Geometry", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DistrictList_data(ctx context.Context, field graphql.CollectedField, obj *model.DistrictList) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DistrictList_data(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Data, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.District)
+	fc.Result = res
+	return ec.marshalODistrict2ᚕᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐDistrict(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DistrictList_data(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DistrictList",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_District_id(ctx, field)
+			case "name":
+				return ec.fieldContext_District_name(ctx, field)
+			case "province":
+				return ec.fieldContext_District_province(ctx, field)
+			case "code":
+				return ec.fieldContext_District_code(ctx, field)
+			case "region":
+				return ec.fieldContext_District_region(ctx, field)
+			case "geometry":
+				return ec.fieldContext_District_geometry(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type District", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DistrictList_after(ctx context.Context, field graphql.CollectedField, obj *model.DistrictList) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DistrictList_after(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.After, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.District)
+	fc.Result = res
+	return ec.marshalODistrict2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐDistrict(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DistrictList_after(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DistrictList",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_District_id(ctx, field)
+			case "name":
+				return ec.fieldContext_District_name(ctx, field)
+			case "province":
+				return ec.fieldContext_District_province(ctx, field)
+			case "code":
+				return ec.fieldContext_District_code(ctx, field)
+			case "region":
+				return ec.fieldContext_District_region(ctx, field)
+			case "geometry":
+				return ec.fieldContext_District_geometry(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type District", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Fokontany_id(ctx context.Context, field graphql.CollectedField, obj *model.Fokontany) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Fokontany_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOID2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Fokontany_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Fokontany",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Fokontany_name(ctx context.Context, field graphql.CollectedField, obj *model.Fokontany) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Fokontany_name(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Fokontany_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Fokontany",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Fokontany_province(ctx context.Context, field graphql.CollectedField, obj *model.Fokontany) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Fokontany_province(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Province, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Fokontany_province(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Fokontany",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Fokontany_code(ctx context.Context, field graphql.CollectedField, obj *model.Fokontany) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Fokontany_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Fokontany_code(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Fokontany",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Fokontany_commune(ctx context.Context, field graphql.CollectedField, obj *model.Fokontany) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Fokontany_commune(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Commune, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Fokontany_commune(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Fokontany",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Fokontany_district(ctx context.Context, field graphql.CollectedField, obj *model.Fokontany) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Fokontany_district(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.District, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Fokontany_district(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Fokontany",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Fokontany_region(ctx context.Context, field graphql.CollectedField, obj *model.Fokontany) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Fokontany_region(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Region, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Fokontany_region(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Fokontany",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Fokontany_geometry(ctx context.Context, field graphql.CollectedField, obj *model.Fokontany) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Fokontany_geometry(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Geometry, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Geometry)
+	fc.Result = res
+	return ec.marshalOGeometry2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐGeometry(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Fokontany_geometry(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Fokontany",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "type":
+				return ec.fieldContext_Geometry_type(ctx, field)
+			case "polygon":
+				return ec.fieldContext_Geometry_polygon(ctx, field)
+			case "multipolygon":
+				return ec.fieldContext_Geometry_multipolygon(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Geometry", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _FokontanyList_data(ctx context.Context, field graphql.CollectedField, obj *model.FokontanyList) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_FokontanyList_data(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Data, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Fokontany)
+	fc.Result = res
+	return ec.marshalOFokontany2ᚕᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐFokontany(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_FokontanyList_data(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "FokontanyList",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Fokontany_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Fokontany_name(ctx, field)
+			case "province":
+				return ec.fieldContext_Fokontany_province(ctx, field)
+			case "code":
+				return ec.fieldContext_Fokontany_code(ctx, field)
+			case "commune":
+				return ec.fieldContext_Fokontany_commune(ctx, field)
+			case "district":
+				return ec.fieldContext_Fokontany_district(ctx, field)
+			case "region":
+				return ec.fieldContext_Fokontany_region(ctx, field)
+			case "geometry":
+				return ec.fieldContext_Fokontany_geometry(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Fokontany", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _FokontanyList_after(ctx context.Context, field graphql.CollectedField, obj *model.FokontanyList) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_FokontanyList_after(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.After, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Fokontany)
+	fc.Result = res
+	return ec.marshalOFokontany2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐFokontany(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_FokontanyList_after(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "FokontanyList",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Fokontany_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Fokontany_name(ctx, field)
+			case "province":
+				return ec.fieldContext_Fokontany_province(ctx, field)
+			case "code":
+				return ec.fieldContext_Fokontany_code(ctx, field)
+			case "commune":
+				return ec.fieldContext_Fokontany_commune(ctx, field)
+			case "district":
+				return ec.fieldContext_Fokontany_district(ctx, field)
+			case "region":
+				return ec.fieldContext_Fokontany_region(ctx, field)
+			case "geometry":
+				return ec.fieldContext_Fokontany_geometry(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Fokontany", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Geometry_type(ctx context.Context, field graphql.CollectedField, obj *model.Geometry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Geometry_type(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Type, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Geometry_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Geometry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Geometry_polygon(ctx context.Context, field graphql.CollectedField, obj *model.Geometry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Geometry_polygon(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Polygon, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Polygon)
+	fc.Result = res
+	return ec.marshalOPolygon2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐPolygon(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Geometry_polygon(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Geometry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "type":
+				return ec.fieldContext_Polygon_type(ctx, field)
+			case "coordinates":
+				return ec.fieldContext_Polygon_coordinates(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Polygon", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Geometry_multipolygon(ctx context.Context, field graphql.CollectedField, obj *model.Geometry) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Geometry_multipolygon(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Multipolygon, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.MultiPolygon)
+	fc.Result = res
+	return ec.marshalOMultiPolygon2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐMultiPolygon(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Geometry_multipolygon(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Geometry",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "type":
+				return ec.fieldContext_MultiPolygon_type(ctx, field)
+			case "coordinates":
+				return ec.fieldContext_MultiPolygon_coordinates(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type MultiPolygon", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _MultiPolygon_type(ctx context.Context, field graphql.CollectedField, obj *model.MultiPolygon) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_MultiPolygon_type(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Type, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_MultiPolygon_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "MultiPolygon",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _MultiPolygon_coordinates(ctx context.Context, field graphql.CollectedField, obj *model.MultiPolygon) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_MultiPolygon_coordinates(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Coordinates, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([][][][]*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚕᚕᚕᚕᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_MultiPolygon_coordinates(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "MultiPolygon",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_empty(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_empty(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().Empty(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_empty(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Mutation",
 		Field:      field,
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Polygon_type(ctx context.Context, field graphql.CollectedField, obj *model.Polygon) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Polygon_type(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Type, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Polygon_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Polygon",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Polygon_coordinates(ctx context.Context, field graphql.CollectedField, obj *model.Polygon) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Polygon_coordinates(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Coordinates, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([][][]*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚕᚕᚕᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Polygon_coordinates(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Polygon",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_commune(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_commune(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Commune(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Commune)
+	fc.Result = res
+	return ec.marshalOCommune2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐCommune(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_commune(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
-				return ec.fieldContext_Todo_id(ctx, field)
-			case "text":
-				return ec.fieldContext_Todo_text(ctx, field)
-			case "done":
-				return ec.fieldContext_Todo_done(ctx, field)
-			case "user":
-				return ec.fieldContext_Todo_user(ctx, field)
+				return ec.fieldContext_Commune_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Commune_name(ctx, field)
+			case "province":
+				return ec.fieldContext_Commune_province(ctx, field)
+			case "code":
+				return ec.fieldContext_Commune_code(ctx, field)
+			case "district":
+				return ec.fieldContext_Commune_district(ctx, field)
+			case "region":
+				return ec.fieldContext_Commune_region(ctx, field)
+			case "geometry":
+				return ec.fieldContext_Commune_geometry(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Todo", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type Commune", field.Name)
 		},
 	}
 	defer func() {
@@ -379,15 +2950,15 @@ func (ec *executionContext) fieldContext_Mutation_createTodo(ctx context.Context
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_createTodo_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_commune_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_todos(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_todos(ctx, field)
+func (ec *executionContext) _Query_communes(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_communes(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -400,24 +2971,120 @@ func (ec *executionContext) _Query_todos(ctx context.Context, field graphql.Coll
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Todos(rctx)
+		return ec.resolvers.Query().Communes(rctx, fc.Args["after"].(*string), fc.Args["size"].(*int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Todo)
+	res := resTmp.(*model.CommuneList)
 	fc.Result = res
-	return ec.marshalNTodo2ᚕᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐTodoᚄ(ctx, field.Selections, res)
+	return ec.marshalOCommuneList2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐCommuneList(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_todos(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_communes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "data":
+				return ec.fieldContext_CommuneList_data(ctx, field)
+			case "after":
+				return ec.fieldContext_CommuneList_after(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CommuneList", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_communes_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_countCommunes(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_countCommunes(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().CountCommunes(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_countCommunes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_district(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_district(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().District(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.District)
+	fc.Result = res
+	return ec.marshalODistrict2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐDistrict(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_district(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -426,16 +3093,524 @@ func (ec *executionContext) fieldContext_Query_todos(ctx context.Context, field 
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
-				return ec.fieldContext_Todo_id(ctx, field)
-			case "text":
-				return ec.fieldContext_Todo_text(ctx, field)
-			case "done":
-				return ec.fieldContext_Todo_done(ctx, field)
-			case "user":
-				return ec.fieldContext_Todo_user(ctx, field)
+				return ec.fieldContext_District_id(ctx, field)
+			case "name":
+				return ec.fieldContext_District_name(ctx, field)
+			case "province":
+				return ec.fieldContext_District_province(ctx, field)
+			case "code":
+				return ec.fieldContext_District_code(ctx, field)
+			case "region":
+				return ec.fieldContext_District_region(ctx, field)
+			case "geometry":
+				return ec.fieldContext_District_geometry(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Todo", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type District", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_district_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_districts(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_districts(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Districts(rctx, fc.Args["after"].(*string), fc.Args["size"].(*int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.DistrictList)
+	fc.Result = res
+	return ec.marshalODistrictList2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐDistrictList(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_districts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "data":
+				return ec.fieldContext_DistrictList_data(ctx, field)
+			case "after":
+				return ec.fieldContext_DistrictList_after(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DistrictList", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_districts_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_countDistricts(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_countDistricts(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().CountDistricts(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_countDistricts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_fokontany(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_fokontany(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Fokontany(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Fokontany)
+	fc.Result = res
+	return ec.marshalOFokontany2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐFokontany(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_fokontany(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Fokontany_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Fokontany_name(ctx, field)
+			case "province":
+				return ec.fieldContext_Fokontany_province(ctx, field)
+			case "code":
+				return ec.fieldContext_Fokontany_code(ctx, field)
+			case "commune":
+				return ec.fieldContext_Fokontany_commune(ctx, field)
+			case "district":
+				return ec.fieldContext_Fokontany_district(ctx, field)
+			case "region":
+				return ec.fieldContext_Fokontany_region(ctx, field)
+			case "geometry":
+				return ec.fieldContext_Fokontany_geometry(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Fokontany", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_fokontany_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_allFokontany(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_allFokontany(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().AllFokontany(rctx, fc.Args["after"].(*string), fc.Args["size"].(*int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.FokontanyList)
+	fc.Result = res
+	return ec.marshalOFokontanyList2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐFokontanyList(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_allFokontany(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "data":
+				return ec.fieldContext_FokontanyList_data(ctx, field)
+			case "after":
+				return ec.fieldContext_FokontanyList_after(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type FokontanyList", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_allFokontany_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_countFokontany(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_countFokontany(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().CountFokontany(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_countFokontany(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_region(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_region(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Region(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Region)
+	fc.Result = res
+	return ec.marshalORegion2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐRegion(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_region(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Region_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Region_name(ctx, field)
+			case "province":
+				return ec.fieldContext_Region_province(ctx, field)
+			case "code":
+				return ec.fieldContext_Region_code(ctx, field)
+			case "geometry":
+				return ec.fieldContext_Region_geometry(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Region", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_region_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_regions(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_regions(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Regions(rctx, fc.Args["after"].(*string), fc.Args["size"].(*int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.RegionList)
+	fc.Result = res
+	return ec.marshalORegionList2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐRegionList(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_regions(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "data":
+				return ec.fieldContext_RegionList_data(ctx, field)
+			case "after":
+				return ec.fieldContext_RegionList_after(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type RegionList", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_regions_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_countRegions(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_countRegions(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().CountRegions(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_countRegions(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_search(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_search(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Search(rctx, fc.Args["keyword"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Results)
+	fc.Result = res
+	return ec.marshalOResults2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐResults(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_search(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "regions":
+				return ec.fieldContext_Results_regions(ctx, field)
+			case "districts":
+				return ec.fieldContext_Results_districts(ctx, field)
+			case "communes":
+				return ec.fieldContext_Results_communes(ctx, field)
+			case "fokontany":
+				return ec.fieldContext_Results_fokontany(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Results", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_search_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
 	}
 	return fc, nil
 }
@@ -564,6 +3739,549 @@ func (ec *executionContext) fieldContext_Query___schema(ctx context.Context, fie
 				return ec.fieldContext___Schema_directives(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Schema", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Region_id(ctx context.Context, field graphql.CollectedField, obj *model.Region) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Region_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOID2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Region_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Region",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Region_name(ctx context.Context, field graphql.CollectedField, obj *model.Region) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Region_name(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Region_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Region",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Region_province(ctx context.Context, field graphql.CollectedField, obj *model.Region) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Region_province(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Province, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Region_province(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Region",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Region_code(ctx context.Context, field graphql.CollectedField, obj *model.Region) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Region_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Region_code(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Region",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Region_geometry(ctx context.Context, field graphql.CollectedField, obj *model.Region) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Region_geometry(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Geometry, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Geometry)
+	fc.Result = res
+	return ec.marshalOGeometry2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐGeometry(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Region_geometry(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Region",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "type":
+				return ec.fieldContext_Geometry_type(ctx, field)
+			case "polygon":
+				return ec.fieldContext_Geometry_polygon(ctx, field)
+			case "multipolygon":
+				return ec.fieldContext_Geometry_multipolygon(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Geometry", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _RegionList_data(ctx context.Context, field graphql.CollectedField, obj *model.RegionList) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_RegionList_data(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Data, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Region)
+	fc.Result = res
+	return ec.marshalORegion2ᚕᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐRegion(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_RegionList_data(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "RegionList",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Region_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Region_name(ctx, field)
+			case "province":
+				return ec.fieldContext_Region_province(ctx, field)
+			case "code":
+				return ec.fieldContext_Region_code(ctx, field)
+			case "geometry":
+				return ec.fieldContext_Region_geometry(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Region", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _RegionList_after(ctx context.Context, field graphql.CollectedField, obj *model.RegionList) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_RegionList_after(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.After, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Region)
+	fc.Result = res
+	return ec.marshalORegion2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐRegion(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_RegionList_after(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "RegionList",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Region_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Region_name(ctx, field)
+			case "province":
+				return ec.fieldContext_Region_province(ctx, field)
+			case "code":
+				return ec.fieldContext_Region_code(ctx, field)
+			case "geometry":
+				return ec.fieldContext_Region_geometry(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Region", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Results_regions(ctx context.Context, field graphql.CollectedField, obj *model.Results) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Results_regions(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Regions, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Region)
+	fc.Result = res
+	return ec.marshalORegion2ᚕᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐRegion(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Results_regions(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Results",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Region_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Region_name(ctx, field)
+			case "province":
+				return ec.fieldContext_Region_province(ctx, field)
+			case "code":
+				return ec.fieldContext_Region_code(ctx, field)
+			case "geometry":
+				return ec.fieldContext_Region_geometry(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Region", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Results_districts(ctx context.Context, field graphql.CollectedField, obj *model.Results) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Results_districts(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Districts, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.District)
+	fc.Result = res
+	return ec.marshalODistrict2ᚕᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐDistrict(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Results_districts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Results",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_District_id(ctx, field)
+			case "name":
+				return ec.fieldContext_District_name(ctx, field)
+			case "province":
+				return ec.fieldContext_District_province(ctx, field)
+			case "code":
+				return ec.fieldContext_District_code(ctx, field)
+			case "region":
+				return ec.fieldContext_District_region(ctx, field)
+			case "geometry":
+				return ec.fieldContext_District_geometry(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type District", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Results_communes(ctx context.Context, field graphql.CollectedField, obj *model.Results) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Results_communes(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Communes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Commune)
+	fc.Result = res
+	return ec.marshalOCommune2ᚕᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐCommune(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Results_communes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Results",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Commune_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Commune_name(ctx, field)
+			case "province":
+				return ec.fieldContext_Commune_province(ctx, field)
+			case "code":
+				return ec.fieldContext_Commune_code(ctx, field)
+			case "district":
+				return ec.fieldContext_Commune_district(ctx, field)
+			case "region":
+				return ec.fieldContext_Commune_region(ctx, field)
+			case "geometry":
+				return ec.fieldContext_Commune_geometry(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Commune", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Results_fokontany(ctx context.Context, field graphql.CollectedField, obj *model.Results) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Results_fokontany(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Fokontany, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Fokontany)
+	fc.Result = res
+	return ec.marshalOFokontany2ᚕᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐFokontany(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Results_fokontany(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Results",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Fokontany_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Fokontany_name(ctx, field)
+			case "province":
+				return ec.fieldContext_Fokontany_province(ctx, field)
+			case "code":
+				return ec.fieldContext_Fokontany_code(ctx, field)
+			case "commune":
+				return ec.fieldContext_Fokontany_commune(ctx, field)
+			case "district":
+				return ec.fieldContext_Fokontany_district(ctx, field)
+			case "region":
+				return ec.fieldContext_Fokontany_region(ctx, field)
+			case "geometry":
+				return ec.fieldContext_Fokontany_geometry(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Fokontany", field.Name)
 		},
 	}
 	return fc, nil
@@ -2612,37 +6330,6 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(ctx context.Conte
 
 // region    **************************** input.gotpl *****************************
 
-func (ec *executionContext) unmarshalInputNewTodo(ctx context.Context, obj interface{}) (model.NewTodo, error) {
-	var it model.NewTodo
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
-		asMap[k] = v
-	}
-
-	for k, v := range asMap {
-		switch k {
-		case "text":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("text"))
-			it.Text, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "userId":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
-			it.UserID, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
-
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -2650,6 +6337,339 @@ func (ec *executionContext) unmarshalInputNewTodo(ctx context.Context, obj inter
 // endregion ************************** interface.gotpl ***************************
 
 // region    **************************** object.gotpl ****************************
+
+var communeImplementors = []string{"Commune"}
+
+func (ec *executionContext) _Commune(ctx context.Context, sel ast.SelectionSet, obj *model.Commune) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, communeImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commune")
+		case "id":
+
+			out.Values[i] = ec._Commune_id(ctx, field, obj)
+
+		case "name":
+
+			out.Values[i] = ec._Commune_name(ctx, field, obj)
+
+		case "province":
+
+			out.Values[i] = ec._Commune_province(ctx, field, obj)
+
+		case "code":
+
+			out.Values[i] = ec._Commune_code(ctx, field, obj)
+
+		case "district":
+
+			out.Values[i] = ec._Commune_district(ctx, field, obj)
+
+		case "region":
+
+			out.Values[i] = ec._Commune_region(ctx, field, obj)
+
+		case "geometry":
+
+			out.Values[i] = ec._Commune_geometry(ctx, field, obj)
+
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var communeListImplementors = []string{"CommuneList"}
+
+func (ec *executionContext) _CommuneList(ctx context.Context, sel ast.SelectionSet, obj *model.CommuneList) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, communeListImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CommuneList")
+		case "data":
+
+			out.Values[i] = ec._CommuneList_data(ctx, field, obj)
+
+		case "after":
+
+			out.Values[i] = ec._CommuneList_after(ctx, field, obj)
+
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var countryImplementors = []string{"Country"}
+
+func (ec *executionContext) _Country(ctx context.Context, sel ast.SelectionSet, obj *model.Country) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, countryImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Country")
+		case "id":
+
+			out.Values[i] = ec._Country_id(ctx, field, obj)
+
+		case "name":
+
+			out.Values[i] = ec._Country_name(ctx, field, obj)
+
+		case "code":
+
+			out.Values[i] = ec._Country_code(ctx, field, obj)
+
+		case "geometry":
+
+			out.Values[i] = ec._Country_geometry(ctx, field, obj)
+
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var districtImplementors = []string{"District"}
+
+func (ec *executionContext) _District(ctx context.Context, sel ast.SelectionSet, obj *model.District) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, districtImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("District")
+		case "id":
+
+			out.Values[i] = ec._District_id(ctx, field, obj)
+
+		case "name":
+
+			out.Values[i] = ec._District_name(ctx, field, obj)
+
+		case "province":
+
+			out.Values[i] = ec._District_province(ctx, field, obj)
+
+		case "code":
+
+			out.Values[i] = ec._District_code(ctx, field, obj)
+
+		case "region":
+
+			out.Values[i] = ec._District_region(ctx, field, obj)
+
+		case "geometry":
+
+			out.Values[i] = ec._District_geometry(ctx, field, obj)
+
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var districtListImplementors = []string{"DistrictList"}
+
+func (ec *executionContext) _DistrictList(ctx context.Context, sel ast.SelectionSet, obj *model.DistrictList) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, districtListImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DistrictList")
+		case "data":
+
+			out.Values[i] = ec._DistrictList_data(ctx, field, obj)
+
+		case "after":
+
+			out.Values[i] = ec._DistrictList_after(ctx, field, obj)
+
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var fokontanyImplementors = []string{"Fokontany"}
+
+func (ec *executionContext) _Fokontany(ctx context.Context, sel ast.SelectionSet, obj *model.Fokontany) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, fokontanyImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Fokontany")
+		case "id":
+
+			out.Values[i] = ec._Fokontany_id(ctx, field, obj)
+
+		case "name":
+
+			out.Values[i] = ec._Fokontany_name(ctx, field, obj)
+
+		case "province":
+
+			out.Values[i] = ec._Fokontany_province(ctx, field, obj)
+
+		case "code":
+
+			out.Values[i] = ec._Fokontany_code(ctx, field, obj)
+
+		case "commune":
+
+			out.Values[i] = ec._Fokontany_commune(ctx, field, obj)
+
+		case "district":
+
+			out.Values[i] = ec._Fokontany_district(ctx, field, obj)
+
+		case "region":
+
+			out.Values[i] = ec._Fokontany_region(ctx, field, obj)
+
+		case "geometry":
+
+			out.Values[i] = ec._Fokontany_geometry(ctx, field, obj)
+
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var fokontanyListImplementors = []string{"FokontanyList"}
+
+func (ec *executionContext) _FokontanyList(ctx context.Context, sel ast.SelectionSet, obj *model.FokontanyList) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, fokontanyListImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("FokontanyList")
+		case "data":
+
+			out.Values[i] = ec._FokontanyList_data(ctx, field, obj)
+
+		case "after":
+
+			out.Values[i] = ec._FokontanyList_after(ctx, field, obj)
+
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var geometryImplementors = []string{"Geometry"}
+
+func (ec *executionContext) _Geometry(ctx context.Context, sel ast.SelectionSet, obj *model.Geometry) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, geometryImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Geometry")
+		case "type":
+
+			out.Values[i] = ec._Geometry_type(ctx, field, obj)
+
+		case "polygon":
+
+			out.Values[i] = ec._Geometry_polygon(ctx, field, obj)
+
+		case "multipolygon":
+
+			out.Values[i] = ec._Geometry_multipolygon(ctx, field, obj)
+
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var multiPolygonImplementors = []string{"MultiPolygon"}
+
+func (ec *executionContext) _MultiPolygon(ctx context.Context, sel ast.SelectionSet, obj *model.MultiPolygon) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, multiPolygonImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("MultiPolygon")
+		case "type":
+
+			out.Values[i] = ec._MultiPolygon_type(ctx, field, obj)
+
+		case "coordinates":
+
+			out.Values[i] = ec._MultiPolygon_coordinates(ctx, field, obj)
+
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
 
 var mutationImplementors = []string{"Mutation"}
 
@@ -2670,15 +6690,41 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Mutation")
-		case "createTodo":
+		case "empty":
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_createTodo(ctx, field)
+				return ec._Mutation_empty(ctx, field)
 			})
 
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var polygonImplementors = []string{"Polygon"}
+
+func (ec *executionContext) _Polygon(ctx context.Context, sel ast.SelectionSet, obj *model.Polygon) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, polygonImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Polygon")
+		case "type":
+
+			out.Values[i] = ec._Polygon_type(ctx, field, obj)
+
+		case "coordinates":
+
+			out.Values[i] = ec._Polygon_coordinates(ctx, field, obj)
+
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -2709,7 +6755,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
-		case "todos":
+		case "commune":
 			field := field
 
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
@@ -2718,10 +6764,247 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_todos(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
+				res = ec._Query_commune(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "communes":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_communes(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "countCommunes":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_countCommunes(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "district":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_district(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "districts":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_districts(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "countDistricts":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_countDistricts(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "fokontany":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_fokontany(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "allFokontany":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_allFokontany(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "countFokontany":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_countFokontany(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "region":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_region(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "regions":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_regions(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "countRegions":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_countRegions(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "search":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_search(ctx, field)
 				return res
 			}
 
@@ -2743,6 +7026,113 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___schema(ctx, field)
 			})
+
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var regionImplementors = []string{"Region"}
+
+func (ec *executionContext) _Region(ctx context.Context, sel ast.SelectionSet, obj *model.Region) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, regionImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Region")
+		case "id":
+
+			out.Values[i] = ec._Region_id(ctx, field, obj)
+
+		case "name":
+
+			out.Values[i] = ec._Region_name(ctx, field, obj)
+
+		case "province":
+
+			out.Values[i] = ec._Region_province(ctx, field, obj)
+
+		case "code":
+
+			out.Values[i] = ec._Region_code(ctx, field, obj)
+
+		case "geometry":
+
+			out.Values[i] = ec._Region_geometry(ctx, field, obj)
+
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var regionListImplementors = []string{"RegionList"}
+
+func (ec *executionContext) _RegionList(ctx context.Context, sel ast.SelectionSet, obj *model.RegionList) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, regionListImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("RegionList")
+		case "data":
+
+			out.Values[i] = ec._RegionList_data(ctx, field, obj)
+
+		case "after":
+
+			out.Values[i] = ec._RegionList_after(ctx, field, obj)
+
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var resultsImplementors = []string{"Results"}
+
+func (ec *executionContext) _Results(ctx context.Context, sel ast.SelectionSet, obj *model.Results) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, resultsImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Results")
+		case "regions":
+
+			out.Values[i] = ec._Results_regions(ctx, field, obj)
+
+		case "districts":
+
+			out.Values[i] = ec._Results_districts(ctx, field, obj)
+
+		case "communes":
+
+			out.Values[i] = ec._Results_communes(ctx, field, obj)
+
+		case "fokontany":
+
+			out.Values[i] = ec._Results_fokontany(ctx, field, obj)
 
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
@@ -3187,11 +7577,6 @@ func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.Selec
 	return res
 }
 
-func (ec *executionContext) unmarshalNNewTodo2githubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐNewTodo(ctx context.Context, v interface{}) (model.NewTodo, error) {
-	res, err := ec.unmarshalInputNewTodo(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
 	res, err := graphql.UnmarshalString(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -3205,64 +7590,6 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 		}
 	}
 	return res
-}
-
-func (ec *executionContext) marshalNTodo2githubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐTodo(ctx context.Context, sel ast.SelectionSet, v model.Todo) graphql.Marshaler {
-	return ec._Todo(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNTodo2ᚕᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐTodoᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Todo) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNTodo2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐTodo(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
-
-	return ret
-}
-
-func (ec *executionContext) marshalNTodo2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐTodo(ctx context.Context, sel ast.SelectionSet, v *model.Todo) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._Todo(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
@@ -3552,6 +7879,430 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	}
 	res := graphql.MarshalBoolean(*v)
 	return res
+}
+
+func (ec *executionContext) marshalOCommune2ᚕᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐCommune(ctx context.Context, sel ast.SelectionSet, v []*model.Commune) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOCommune2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐCommune(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOCommune2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐCommune(ctx context.Context, sel ast.SelectionSet, v *model.Commune) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Commune(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOCommuneList2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐCommuneList(ctx context.Context, sel ast.SelectionSet, v *model.CommuneList) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._CommuneList(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalODistrict2ᚕᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐDistrict(ctx context.Context, sel ast.SelectionSet, v []*model.District) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalODistrict2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐDistrict(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalODistrict2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐDistrict(ctx context.Context, sel ast.SelectionSet, v *model.District) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._District(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalODistrictList2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐDistrictList(ctx context.Context, sel ast.SelectionSet, v *model.DistrictList) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._DistrictList(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOFloat2ᚕᚕᚕᚕᚖfloat64(ctx context.Context, v interface{}) ([][][][]*float64, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([][][][]*float64, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalOFloat2ᚕᚕᚕᚖfloat64(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOFloat2ᚕᚕᚕᚕᚖfloat64(ctx context.Context, sel ast.SelectionSet, v [][][][]*float64) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalOFloat2ᚕᚕᚕᚖfloat64(ctx, sel, v[i])
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalOFloat2ᚕᚕᚕᚖfloat64(ctx context.Context, v interface{}) ([][][]*float64, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([][][]*float64, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalOFloat2ᚕᚕᚖfloat64(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOFloat2ᚕᚕᚕᚖfloat64(ctx context.Context, sel ast.SelectionSet, v [][][]*float64) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalOFloat2ᚕᚕᚖfloat64(ctx, sel, v[i])
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalOFloat2ᚕᚕᚖfloat64(ctx context.Context, v interface{}) ([][]*float64, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([][]*float64, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalOFloat2ᚕᚖfloat64(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOFloat2ᚕᚕᚖfloat64(ctx context.Context, sel ast.SelectionSet, v [][]*float64) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalOFloat2ᚕᚖfloat64(ctx, sel, v[i])
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalOFloat2ᚕᚖfloat64(ctx context.Context, v interface{}) ([]*float64, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([]*float64, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalOFloat2ᚖfloat64(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOFloat2ᚕᚖfloat64(ctx context.Context, sel ast.SelectionSet, v []*float64) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalOFloat2ᚖfloat64(ctx, sel, v[i])
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalOFloat2ᚖfloat64(ctx context.Context, v interface{}) (*float64, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalFloatContext(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOFloat2ᚖfloat64(ctx context.Context, sel ast.SelectionSet, v *float64) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	res := graphql.MarshalFloatContext(*v)
+	return graphql.WrapContextMarshaler(ctx, res)
+}
+
+func (ec *executionContext) marshalOFokontany2ᚕᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐFokontany(ctx context.Context, sel ast.SelectionSet, v []*model.Fokontany) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOFokontany2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐFokontany(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOFokontany2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐFokontany(ctx context.Context, sel ast.SelectionSet, v *model.Fokontany) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Fokontany(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOFokontanyList2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐFokontanyList(ctx context.Context, sel ast.SelectionSet, v *model.FokontanyList) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._FokontanyList(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOGeometry2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐGeometry(ctx context.Context, sel ast.SelectionSet, v *model.Geometry) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Geometry(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOID2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalID(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOID2ᚖstring(ctx context.Context, sel ast.SelectionSet, v *string) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	res := graphql.MarshalID(*v)
+	return res
+}
+
+func (ec *executionContext) unmarshalOInt2ᚖint(ctx context.Context, v interface{}) (*int, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalInt(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.SelectionSet, v *int) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	res := graphql.MarshalInt(*v)
+	return res
+}
+
+func (ec *executionContext) marshalOMultiPolygon2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐMultiPolygon(ctx context.Context, sel ast.SelectionSet, v *model.MultiPolygon) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._MultiPolygon(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOPolygon2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐPolygon(ctx context.Context, sel ast.SelectionSet, v *model.Polygon) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Polygon(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalORegion2ᚕᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐRegion(ctx context.Context, sel ast.SelectionSet, v []*model.Region) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalORegion2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐRegion(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalORegion2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐRegion(ctx context.Context, sel ast.SelectionSet, v *model.Region) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Region(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalORegionList2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐRegionList(ctx context.Context, sel ast.SelectionSet, v *model.RegionList) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._RegionList(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOResults2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐResults(ctx context.Context, sel ast.SelectionSet, v *model.Results) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Results(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v interface{}) (*string, error) {

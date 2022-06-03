@@ -2,7 +2,6 @@ package mada
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -10,30 +9,25 @@ import (
 	"github.com/blevesearch/bleve/v2"
 	"github.com/blevesearch/bleve/v2/search/highlight/highlighter/ansi"
 	olc "github.com/google/open-location-code/go"
-	"github.com/pkg/browser"
+	svc "github.com/tsirysndr/mada/interfaces"
+	"github.com/tsirysndr/mada/types"
 	"github.com/twpayne/go-geom"
 	"github.com/twpayne/go-geom/encoding/wkt"
 )
 
-type SearchOptions struct {
-	OutputInJSON       bool
-	SearchForFokontany bool
-	SearchForCommune   bool
-	SearchForDistrict  bool
-	SearchForRegion    bool
-	OpenInBrowser      bool
+type SearchService struct {
+	db    *sql.DB
+	index bleve.Index
 }
 
-func Search(term string, opt SearchOptions) {
-	index, err := InitializeBleve()
+func NewSearchService(db *sql.DB, index bleve.Index) svc.SearchSvc {
+	return &SearchService{db: db, index: index}
+}
 
-	if err != nil {
-		panic(err)
-	}
-
-	err = SearchPoint(term, opt)
+func (s *SearchService) Search(term string, opt types.SearchOptions) (*types.SearchResult, error) {
+	result, err := s.SearchPoint(term, opt)
 	if err == nil {
-		return
+		return result, err
 	}
 
 	query := bleve.NewQueryStringQuery(term)
@@ -42,28 +36,8 @@ func Search(term string, opt SearchOptions) {
 	search.Size = 100
 	search.Highlight = bleve.NewHighlightWithStyle(ansi.Name)
 
-	searchResults, err := index.Search(search)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	if opt.OpenInBrowser {
-		err := browser.OpenURL(fmt.Sprintf("http://localhost:%d", PORT))
-		if err != nil {
-			fmt.Printf("Open http://localhost:%d in your browser\n", PORT)
-		}
-		StartHttpServer()
-	}
-
-	if !opt.OutputInJSON {
-		fmt.Println(searchResults)
-		return
-	}
-
-	b, _ := json.MarshalIndent(searchResults.Hits, "", "  ")
-
-	fmt.Println(string(b))
+	searchResults, err := s.index.Search(search)
+	return &types.SearchResult{Result: searchResults}, err
 }
 
 func InitializeBleve() (bleve.Index, error) {
@@ -73,45 +47,37 @@ func InitializeBleve() (bleve.Index, error) {
 	return bleve.Open(DATABASE_PATH)
 }
 
-func SearchPoint(term string, opt SearchOptions) (err error) {
-	var db *sql.DB
-	if os.Getenv("MADA_POSTGRES_URL") != "" {
-		db, err = OpenPostgresConnection()
-	} else {
-		db, err = OpenSQLiteConnection()
-	}
-
-	defer db.Close()
-
+func (s *SearchService) SearchPoint(term string, opt types.SearchOptions) (result *types.SearchResult, err error) {
 	area, err := olc.Decode(term)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if opt.SearchForFokontany {
-		searchInFokontany(db, area, opt)
-		return nil
+		f, _ := searchInFokontany(s.db, area, opt)
+		fmt.Println(f)
+		return &types.SearchResult{Fokontany: f}, nil
 	}
 	if opt.SearchForCommune {
-		searchInCommune(db, area, opt)
-		return nil
+		c, _ := searchInCommune(s.db, area, opt)
+		return &types.SearchResult{Commune: c}, nil
 	}
 	if opt.SearchForDistrict {
-		searchInDistrict(db, area, opt)
-		return nil
+		d, _ := searchInDistrict(s.db, area, opt)
+		return &types.SearchResult{District: d}, nil
 	}
 	if opt.SearchForRegion {
-		searchInRegion(db, area, opt)
-		return nil
+		r, _ := searchInRegion(s.db, area, opt)
+		return &types.SearchResult{Region: r}, nil
 	}
 
-	searchInFokontany(db, area, opt)
+	f, _ := searchInFokontany(s.db, area, opt)
 
-	return nil
+	return &types.SearchResult{Fokontany: f}, nil
 }
 
-func searchInFokontany(db *sql.DB, area olc.CodeArea, opt SearchOptions) bool {
+func searchInFokontany(db *sql.DB, area olc.CodeArea, opt types.SearchOptions) (*types.Fokontany, bool) {
 	point := fmt.Sprintf("POINT(%f %f)", area.LngLo, area.LatLo)
 	rows, err := db.Query("SELECT uid, name, commune, region, district, country, ST_AsText(geom) from fokontany f where st_contains(f.geom, st_geometryfromtext($1, 4326))", point)
 	if err != nil {
@@ -124,56 +90,23 @@ func searchInFokontany(db *sql.DB, area olc.CodeArea, opt SearchOptions) bool {
 		noresults = false
 		rows.Scan(&uid, &name, &commune, &region, &district, &country, &g)
 
-		if opt.OpenInBrowser {
-			err := browser.OpenURL(fmt.Sprintf("http://localhost:%d", PORT))
-			if err != nil {
-				log.Printf("Open http://localhost:%d in your browser", PORT)
-			}
-			StartHttpServer()
-		}
-
 		p, _ := wkt.Unmarshal(g)
 
-		if opt.OutputInJSON {
-			b, _ := json.MarshalIndent(Fokontany{
-				ID:          uid,
-				Name:        name,
-				Commune:     commune,
-				Region:      region,
-				District:    district,
-				Country:     country,
-				Coordinates: p.(*geom.Polygon).Coords(),
-				Point:       geom.NewPoint(geom.XY).MustSetCoords(geom.Coord{area.LngLo, area.LatLo}).Coords(),
-			}, "", "  ")
-			fmt.Println(string(b))
-			return noresults
-		}
-		fmt.Printf(`
-        point
-                %v
-        id
-                %s
-        name
-                %s
-        commune
-                %s
-        district
-                %s
-        region
-                %s
-        country
-                %s
-        type
-                fokontany
-        geometry
-                %v
-	`, geom.NewPoint(geom.XY).MustSetCoords(geom.Coord{area.LngLo, area.LatLo}).Coords(), uid, name, commune, district, region, country, p.(*geom.Polygon).Coords())
-
+		return &types.Fokontany{
+			ID:          uid,
+			Name:        name,
+			Commune:     commune,
+			Region:      region,
+			District:    district,
+			Country:     country,
+			Coordinates: p.(*geom.Polygon).Coords(),
+			Point:       geom.NewPoint(geom.XY).MustSetCoords(geom.Coord{area.LngLo, area.LatLo}).Coords(),
+		}, noresults
 	}
-	return noresults
+	return nil, noresults
 }
 
-func searchInCommune(db *sql.DB, area olc.CodeArea, opt SearchOptions) bool {
+func searchInCommune(db *sql.DB, area olc.CodeArea, opt types.SearchOptions) (*types.Commune, bool) {
 	point := fmt.Sprintf("POINT(%f %f)", area.LngLo, area.LatLo)
 	rows, err := db.Query("SELECT uid, name, region, district, country, ST_AsText(geom) from commune f where st_contains(f.geom, st_geometryfromtext($1, 4326))", point)
 	if err != nil {
@@ -186,61 +119,22 @@ func searchInCommune(db *sql.DB, area olc.CodeArea, opt SearchOptions) bool {
 		noresults = false
 		rows.Scan(&uid, &name, &region, &district, &country, &g)
 
-		if opt.OpenInBrowser {
-			err := browser.OpenURL(fmt.Sprintf("http://localhost:%d", PORT))
-			if err != nil {
-				fmt.Printf("Open http://localhost:%d in your browser\n", PORT)
-			}
-			StartHttpServer()
-		}
-
 		p, _ := wkt.Unmarshal(g)
 
-		if opt.OutputInJSON {
-			b, _ := json.MarshalIndent(Commune{
-				ID:          uid,
-				Name:        name,
-				Region:      region,
-				District:    district,
-				Country:     country,
-				Coordinates: p.(*geom.Polygon).Coords(),
-				Point:       geom.NewPoint(geom.XY).MustSetCoords(geom.Coord{area.LngLo, area.LatLo}).Coords(),
-			}, "", "  ")
-			fmt.Println(string(b))
-			return noresults
-		}
-		fmt.Printf(`
-        point
-                %v
-        id
-                %s
-        name
-                %s
-        district
-                %s
-        region
-                %s
-        country
-                %s
-        type
-                commune
-        geometry
-                %v
-	`,
-			geom.NewPoint(geom.XY).MustSetCoords(geom.Coord{area.LngLo, area.LatLo}).Coords(),
-			uid,
-			name,
-			district,
-			region,
-			country,
-			p.(*geom.Polygon).Coords(),
-		)
-
+		return &types.Commune{
+			ID:          uid,
+			Name:        name,
+			Region:      region,
+			District:    district,
+			Country:     country,
+			Coordinates: p.(*geom.Polygon).Coords(),
+			Point:       geom.NewPoint(geom.XY).MustSetCoords(geom.Coord{area.LngLo, area.LatLo}).Coords(),
+		}, noresults
 	}
-	return noresults
+	return nil, noresults
 }
 
-func searchInDistrict(db *sql.DB, area olc.CodeArea, opt SearchOptions) bool {
+func searchInDistrict(db *sql.DB, area olc.CodeArea, opt types.SearchOptions) (*types.District, bool) {
 	point := fmt.Sprintf("POINT(%f %f)", area.LngLo, area.LatLo)
 	rows, err := db.Query("SELECT uid, name, region, country, ST_AsText(geom) from district f where st_contains(f.geom, st_geometryfromtext($1, 4326))", point)
 	if err != nil {
@@ -253,57 +147,22 @@ func searchInDistrict(db *sql.DB, area olc.CodeArea, opt SearchOptions) bool {
 		noresults = false
 		rows.Scan(&uid, &name, &region, &country, &g)
 
-		if opt.OpenInBrowser {
-			err := browser.OpenURL(fmt.Sprintf("http://localhost:%d", PORT))
-			if err != nil {
-				fmt.Printf("Open http://localhost:%d in your browser\n", PORT)
-			}
-			StartHttpServer()
-		}
-
 		p, _ := wkt.Unmarshal(g)
 
-		if opt.OutputInJSON {
-			b, _ := json.MarshalIndent(District{
-				ID:          uid,
-				Name:        name,
-				Region:      region,
-				Country:     country,
-				Coordinates: p.(*geom.Polygon).Coords(),
-				Point:       geom.NewPoint(geom.XY).MustSetCoords(geom.Coord{area.LngLo, area.LatLo}).Coords(),
-			}, "", "  ")
-			fmt.Println(string(b))
-			return noresults
-		}
-		fmt.Printf(`
-        point
-                %v
-        id
-                %s
-        name
-                %s
-        region
-                %s
-        country
-                %s
-        type
-                district
-        geometry
-                %v
-	`,
-			geom.NewPoint(geom.XY).MustSetCoords(geom.Coord{area.LngLo, area.LatLo}).Coords(),
-			uid,
-			name,
-			region,
-			country,
-			p.(*geom.Polygon).Coords(),
-		)
+		return &types.District{
+			ID:          uid,
+			Name:        name,
+			Region:      region,
+			Country:     country,
+			Coordinates: p.(*geom.Polygon).Coords(),
+			Point:       geom.NewPoint(geom.XY).MustSetCoords(geom.Coord{area.LngLo, area.LatLo}).Coords(),
+		}, noresults
 
 	}
-	return noresults
+	return nil, noresults
 }
 
-func searchInRegion(db *sql.DB, area olc.CodeArea, opt SearchOptions) bool {
+func searchInRegion(db *sql.DB, area olc.CodeArea, opt types.SearchOptions) (*types.Region, bool) {
 	point := fmt.Sprintf("POINT(%f %f)", area.LngLo, area.LatLo)
 	rows, err := db.Query("SELECT uid, name, country, ST_AsText(geom) from region f where st_contains(f.geom, st_geometryfromtext($1, 4326))", point)
 	if err != nil {
@@ -316,48 +175,16 @@ func searchInRegion(db *sql.DB, area olc.CodeArea, opt SearchOptions) bool {
 		noresults = false
 		rows.Scan(&uid, &name, &country, &g)
 
-		if opt.OpenInBrowser {
-			err := browser.OpenURL(fmt.Sprintf("http://localhost:%d", PORT))
-			if err != nil {
-				fmt.Printf("Open http://localhost:%d in your browser\n", PORT)
-			}
-			StartHttpServer()
-		}
-
 		p, _ := wkt.Unmarshal(g)
 
-		if opt.OutputInJSON {
-			b, _ := json.MarshalIndent(Region{
-				ID:          uid,
-				Name:        name,
-				Country:     country,
-				Coordinates: p.(*geom.Polygon).Coords(),
-				Point:       geom.NewPoint(geom.XY).MustSetCoords(geom.Coord{area.LngLo, area.LatLo}).Coords(),
-			}, "", "  ")
-			fmt.Println(string(b))
-			return noresults
-		}
-		fmt.Printf(`
-	      point
-	              %v
-        id
-                %s
-        name
-                %s
-        country
-                %s
-        type
-                region
-        geometry
-                %v
-	`,
-			geom.NewPoint(geom.XY).MustSetCoords(geom.Coord{area.LngLo, area.LatLo}).Coords(),
-			uid,
-			name,
-			country,
-			p.(*geom.Polygon).Coords(),
-		)
+		return &types.Region{
+			ID:          uid,
+			Name:        name,
+			Country:     country,
+			Coordinates: p.(*geom.Polygon).Coords(),
+			Point:       geom.NewPoint(geom.XY).MustSetCoords(geom.Coord{area.LngLo, area.LatLo}).Coords(),
+		}, noresults
 
 	}
-	return noresults
+	return nil, noresults
 }
