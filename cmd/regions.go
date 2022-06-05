@@ -58,7 +58,7 @@ to quickly create a Cobra application.`,
 			panic(err)
 		}
 
-		index, err := mada.InitializeBleve()
+		index, err := mada.InitializeBleve(db)
 		if err != nil {
 			panic(err)
 		}

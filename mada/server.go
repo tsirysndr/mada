@@ -35,7 +35,7 @@ func StartHttpServer(db *sql.DB) {
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	})
 
-	index, err := InitializeBleve()
+	index, err := InitializeBleve(db)
 	if err != nil {
 		panic(err)
 	}

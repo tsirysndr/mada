@@ -62,7 +62,7 @@ type Geometry struct {
 //go:embed shp/*
 var Assets embed.FS
 
-func Init() (bleve.Index, error) {
+func Init(db *sql.DB) (bleve.Index, error) {
 
 	index, err := CreateOrOpenBleve()
 
@@ -70,23 +70,10 @@ func Init() (bleve.Index, error) {
 		log.Fatal(err)
 	}
 
-	var db *sql.DB
-
 	if os.Getenv("MADA_POSTGRES_URL") != "" {
-		db, err = OpenPostgresConnection()
-
-		if err != nil {
-			log.Fatal(err)
-		}
 		createPostgresTables(db)
 		addPostgresGeometryColumns(db)
 	} else {
-		db, err = OpenSQLiteConnection()
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
 		initializeSpatialMetadata(db)
 		createTables(db)
 		addGeometryColumns(db)

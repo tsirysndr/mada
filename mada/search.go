@@ -40,9 +40,9 @@ func (s *SearchService) Search(term string, opt types.SearchOptions) (*types.Sea
 	return &types.SearchResult{Result: searchResults}, err
 }
 
-func InitializeBleve() (bleve.Index, error) {
+func InitializeBleve(db *sql.DB) (bleve.Index, error) {
 	if _, err := os.Stat(DATABASE_PATH); os.IsNotExist(err) {
-		return Init()
+		return Init(db)
 	}
 	return bleve.Open(DATABASE_PATH)
 }
