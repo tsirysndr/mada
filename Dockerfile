@@ -28,7 +28,7 @@ COPY --from=ui_builder /ui/build dist
 
 RUN statik -src=dist && go build -o /usr/local/bin/mada
 
-FROM alpine:latest
+FROM alpine:3.16
 
 RUN apk --no-cache add ca-certificates libspatialite
 
