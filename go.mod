@@ -10,6 +10,7 @@ require (
 	github.com/go-chi/chi v1.5.4
 	github.com/go-chi/cors v1.2.1
 	github.com/google/open-location-code/go v0.0.0-20220120191843-cafb35c0d74d
+	github.com/jinzhu/copier v0.3.5
 	github.com/lib/pq v1.10.6
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/mitchellh/go-homedir v1.1.0

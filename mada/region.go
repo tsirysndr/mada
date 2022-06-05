@@ -19,6 +19,12 @@ func NewRegionService(db *sql.DB, index bleve.Index) svc.RegionSvc {
 	return &RegionService{db: db, index: index}
 }
 
+func (r *RegionService) Count() (c int, err error) {
+	row := r.db.QueryRow("SELECT count(*) FROM region")
+	err = row.Scan(&c)
+	return c, err
+}
+
 func (r *RegionService) List(skip, limit int) (*bleve.SearchResult, error) {
 	query := bleve.NewMatchQuery("region")
 	search := bleve.NewSearchRequest(query)

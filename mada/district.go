@@ -29,6 +29,12 @@ func (d *DistrictService) List(skip, limit int) (*bleve.SearchResult, error) {
 	return d.index.Search(search)
 }
 
+func (d *DistrictService) Count() (c int, err error) {
+	row := d.db.QueryRow("SELECT count(*) FROM district")
+	err = row.Scan(&c)
+	return c, err
+}
+
 func (d *DistrictService) ShowDistrict(id string) (*types.District, error) {
 	rows, _ := d.db.Query("SELECT uid, name, region, ST_AsText(geom) FROM district WHERE uid = $1", id)
 	defer rows.Close()

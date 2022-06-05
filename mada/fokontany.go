@@ -30,6 +30,12 @@ func (f *FokontanyService) List(skip, limit int) (*bleve.SearchResult, error) {
 	return f.index.Search(search)
 }
 
+func (f *FokontanyService) Count() (c int, err error) {
+	row := f.db.QueryRow("SELECT count(*) FROM fokontany")
+	err = row.Scan(&c)
+	return c, err
+}
+
 func (f *FokontanyService) ShowFokontany(id string) (*types.Fokontany, error) {
 	rows, err := f.db.Query("SELECT uid, name, commune, region, district, country, ST_AsText(geom) FROM fokontany WHERE uid = $1", id)
 

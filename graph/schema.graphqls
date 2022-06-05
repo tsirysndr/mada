@@ -23,6 +23,9 @@ type Commune {
   code: String
   district: String
   region: String
+  country: String
+  coordinates: [[[Float!]]]
+  point: [Float!]
   geometry: Geometry
 }
 
@@ -35,6 +38,7 @@ type Country {
   id: ID
   name: String
   code: String
+  coordinates: [[[Float!]]]
   geometry: MultiPolygon
 }
 
@@ -44,6 +48,9 @@ type District {
   province: String
   code: String
   region: String
+  country: String
+  coordinates: [[[Float!]]]
+  point: [Float!]
   geometry: Geometry
 }
 
@@ -60,6 +67,9 @@ type Fokontany {
   commune: String
   district: String
   region: String
+  country: String
+  coordinates: [[[Float!]]]
+  point: [Float!]
   geometry: Geometry
 }
 
@@ -90,6 +100,9 @@ type Region {
   province: String
   code: String
   geometry: Geometry
+  country: String
+  coordinates: [[[Float!]]]
+  point: [Float!]
 }
 
 type RegionList {
@@ -97,27 +110,44 @@ type RegionList {
   after: Region
 }
 
-type Results {
-  regions: [Region]
-  districts: [District]
-  communes: [Commune]
-  fokontany: [Fokontany]
+type Fields {
+  commune: String
+  country: String
+  district: String
+  fokontany: String
+  name: String
+  province: String
+  region: String
+  type: String
 }
 
+type Hit {
+  id: ID
+  score: Float
+  fields: Fields
+}
+
+type Results {
+  region: Region
+  district: District
+  commune: Commune
+  fokontany: Fokontany
+  hits: [Hit]
+}
 
 type Query {
   commune(id: ID!): Commune
-  communes(after: ID, size: Int): CommuneList
-  countCommunes: Int
+  communes(skip: Int, size: Int): CommuneList
+  countCommunes: Int!
   district(id: ID!): District
-  districts(after: ID, size: Int): DistrictList
-  countDistricts: Int
+  districts(skip: Int, size: Int): DistrictList
+  countDistricts: Int!
   fokontany(id: ID!): Fokontany
-  allFokontany(after: ID, size: Int): FokontanyList
-  countFokontany: Int
+  allFokontany(skip: Int, size: Int): FokontanyList
+  countFokontany: Int!
   region(id: ID!): Region
-  regions(after: ID, size: Int): RegionList
-  countRegions: Int
+  regions(skip: Int, size: Int): RegionList
+  countRegions: Int!
   search(keyword: String!): Results
 }
 

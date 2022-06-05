@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"strconv"
 	"sync"
+	"sync/atomic"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
@@ -44,13 +45,16 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Commune struct {
-		Code     func(childComplexity int) int
-		District func(childComplexity int) int
-		Geometry func(childComplexity int) int
-		ID       func(childComplexity int) int
-		Name     func(childComplexity int) int
-		Province func(childComplexity int) int
-		Region   func(childComplexity int) int
+		Code        func(childComplexity int) int
+		Coordinates func(childComplexity int) int
+		Country     func(childComplexity int) int
+		District    func(childComplexity int) int
+		Geometry    func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Name        func(childComplexity int) int
+		Point       func(childComplexity int) int
+		Province    func(childComplexity int) int
+		Region      func(childComplexity int) int
 	}
 
 	CommuneList struct {
@@ -59,19 +63,23 @@ type ComplexityRoot struct {
 	}
 
 	Country struct {
-		Code     func(childComplexity int) int
-		Geometry func(childComplexity int) int
-		ID       func(childComplexity int) int
-		Name     func(childComplexity int) int
+		Code        func(childComplexity int) int
+		Coordinates func(childComplexity int) int
+		Geometry    func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Name        func(childComplexity int) int
 	}
 
 	District struct {
-		Code     func(childComplexity int) int
-		Geometry func(childComplexity int) int
-		ID       func(childComplexity int) int
-		Name     func(childComplexity int) int
-		Province func(childComplexity int) int
-		Region   func(childComplexity int) int
+		Code        func(childComplexity int) int
+		Coordinates func(childComplexity int) int
+		Country     func(childComplexity int) int
+		Geometry    func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Name        func(childComplexity int) int
+		Point       func(childComplexity int) int
+		Province    func(childComplexity int) int
+		Region      func(childComplexity int) int
 	}
 
 	DistrictList struct {
@@ -79,15 +87,29 @@ type ComplexityRoot struct {
 		Data  func(childComplexity int) int
 	}
 
+	Fields struct {
+		Commune   func(childComplexity int) int
+		Country   func(childComplexity int) int
+		District  func(childComplexity int) int
+		Fokontany func(childComplexity int) int
+		Name      func(childComplexity int) int
+		Province  func(childComplexity int) int
+		Region    func(childComplexity int) int
+		Type      func(childComplexity int) int
+	}
+
 	Fokontany struct {
-		Code     func(childComplexity int) int
-		Commune  func(childComplexity int) int
-		District func(childComplexity int) int
-		Geometry func(childComplexity int) int
-		ID       func(childComplexity int) int
-		Name     func(childComplexity int) int
-		Province func(childComplexity int) int
-		Region   func(childComplexity int) int
+		Code        func(childComplexity int) int
+		Commune     func(childComplexity int) int
+		Coordinates func(childComplexity int) int
+		Country     func(childComplexity int) int
+		District    func(childComplexity int) int
+		Geometry    func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Name        func(childComplexity int) int
+		Point       func(childComplexity int) int
+		Province    func(childComplexity int) int
+		Region      func(childComplexity int) int
 	}
 
 	FokontanyList struct {
@@ -99,6 +121,12 @@ type ComplexityRoot struct {
 		Multipolygon func(childComplexity int) int
 		Polygon      func(childComplexity int) int
 		Type         func(childComplexity int) int
+	}
+
+	Hit struct {
+		Fields func(childComplexity int) int
+		ID     func(childComplexity int) int
+		Score  func(childComplexity int) int
 	}
 
 	MultiPolygon struct {
@@ -116,27 +144,30 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		AllFokontany   func(childComplexity int, after *string, size *int) int
+		AllFokontany   func(childComplexity int, skip *int, size *int) int
 		Commune        func(childComplexity int, id string) int
-		Communes       func(childComplexity int, after *string, size *int) int
+		Communes       func(childComplexity int, skip *int, size *int) int
 		CountCommunes  func(childComplexity int) int
 		CountDistricts func(childComplexity int) int
 		CountFokontany func(childComplexity int) int
 		CountRegions   func(childComplexity int) int
 		District       func(childComplexity int, id string) int
-		Districts      func(childComplexity int, after *string, size *int) int
+		Districts      func(childComplexity int, skip *int, size *int) int
 		Fokontany      func(childComplexity int, id string) int
 		Region         func(childComplexity int, id string) int
-		Regions        func(childComplexity int, after *string, size *int) int
+		Regions        func(childComplexity int, skip *int, size *int) int
 		Search         func(childComplexity int, keyword string) int
 	}
 
 	Region struct {
-		Code     func(childComplexity int) int
-		Geometry func(childComplexity int) int
-		ID       func(childComplexity int) int
-		Name     func(childComplexity int) int
-		Province func(childComplexity int) int
+		Code        func(childComplexity int) int
+		Coordinates func(childComplexity int) int
+		Country     func(childComplexity int) int
+		Geometry    func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Name        func(childComplexity int) int
+		Point       func(childComplexity int) int
+		Province    func(childComplexity int) int
 	}
 
 	RegionList struct {
@@ -145,10 +176,11 @@ type ComplexityRoot struct {
 	}
 
 	Results struct {
-		Communes  func(childComplexity int) int
-		Districts func(childComplexity int) int
+		Commune   func(childComplexity int) int
+		District  func(childComplexity int) int
 		Fokontany func(childComplexity int) int
-		Regions   func(childComplexity int) int
+		Hits      func(childComplexity int) int
+		Region    func(childComplexity int) int
 	}
 
 	Todo struct {
@@ -169,17 +201,17 @@ type MutationResolver interface {
 }
 type QueryResolver interface {
 	Commune(ctx context.Context, id string) (*model.Commune, error)
-	Communes(ctx context.Context, after *string, size *int) (*model.CommuneList, error)
-	CountCommunes(ctx context.Context) (*int, error)
+	Communes(ctx context.Context, skip *int, size *int) (*model.CommuneList, error)
+	CountCommunes(ctx context.Context) (int, error)
 	District(ctx context.Context, id string) (*model.District, error)
-	Districts(ctx context.Context, after *string, size *int) (*model.DistrictList, error)
-	CountDistricts(ctx context.Context) (*int, error)
+	Districts(ctx context.Context, skip *int, size *int) (*model.DistrictList, error)
+	CountDistricts(ctx context.Context) (int, error)
 	Fokontany(ctx context.Context, id string) (*model.Fokontany, error)
-	AllFokontany(ctx context.Context, after *string, size *int) (*model.FokontanyList, error)
-	CountFokontany(ctx context.Context) (*int, error)
+	AllFokontany(ctx context.Context, skip *int, size *int) (*model.FokontanyList, error)
+	CountFokontany(ctx context.Context) (int, error)
 	Region(ctx context.Context, id string) (*model.Region, error)
-	Regions(ctx context.Context, after *string, size *int) (*model.RegionList, error)
-	CountRegions(ctx context.Context) (*int, error)
+	Regions(ctx context.Context, skip *int, size *int) (*model.RegionList, error)
+	CountRegions(ctx context.Context) (int, error)
 	Search(ctx context.Context, keyword string) (*model.Results, error)
 }
 
@@ -204,6 +236,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Commune.Code(childComplexity), true
+
+	case "Commune.coordinates":
+		if e.complexity.Commune.Coordinates == nil {
+			break
+		}
+
+		return e.complexity.Commune.Coordinates(childComplexity), true
+
+	case "Commune.country":
+		if e.complexity.Commune.Country == nil {
+			break
+		}
+
+		return e.complexity.Commune.Country(childComplexity), true
 
 	case "Commune.district":
 		if e.complexity.Commune.District == nil {
@@ -232,6 +278,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Commune.Name(childComplexity), true
+
+	case "Commune.point":
+		if e.complexity.Commune.Point == nil {
+			break
+		}
+
+		return e.complexity.Commune.Point(childComplexity), true
 
 	case "Commune.province":
 		if e.complexity.Commune.Province == nil {
@@ -268,6 +321,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Country.Code(childComplexity), true
 
+	case "Country.coordinates":
+		if e.complexity.Country.Coordinates == nil {
+			break
+		}
+
+		return e.complexity.Country.Coordinates(childComplexity), true
+
 	case "Country.geometry":
 		if e.complexity.Country.Geometry == nil {
 			break
@@ -296,6 +356,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.District.Code(childComplexity), true
 
+	case "District.coordinates":
+		if e.complexity.District.Coordinates == nil {
+			break
+		}
+
+		return e.complexity.District.Coordinates(childComplexity), true
+
+	case "District.country":
+		if e.complexity.District.Country == nil {
+			break
+		}
+
+		return e.complexity.District.Country(childComplexity), true
+
 	case "District.geometry":
 		if e.complexity.District.Geometry == nil {
 			break
@@ -316,6 +390,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.District.Name(childComplexity), true
+
+	case "District.point":
+		if e.complexity.District.Point == nil {
+			break
+		}
+
+		return e.complexity.District.Point(childComplexity), true
 
 	case "District.province":
 		if e.complexity.District.Province == nil {
@@ -345,6 +426,62 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.DistrictList.Data(childComplexity), true
 
+	case "Fields.commune":
+		if e.complexity.Fields.Commune == nil {
+			break
+		}
+
+		return e.complexity.Fields.Commune(childComplexity), true
+
+	case "Fields.country":
+		if e.complexity.Fields.Country == nil {
+			break
+		}
+
+		return e.complexity.Fields.Country(childComplexity), true
+
+	case "Fields.district":
+		if e.complexity.Fields.District == nil {
+			break
+		}
+
+		return e.complexity.Fields.District(childComplexity), true
+
+	case "Fields.fokontany":
+		if e.complexity.Fields.Fokontany == nil {
+			break
+		}
+
+		return e.complexity.Fields.Fokontany(childComplexity), true
+
+	case "Fields.name":
+		if e.complexity.Fields.Name == nil {
+			break
+		}
+
+		return e.complexity.Fields.Name(childComplexity), true
+
+	case "Fields.province":
+		if e.complexity.Fields.Province == nil {
+			break
+		}
+
+		return e.complexity.Fields.Province(childComplexity), true
+
+	case "Fields.region":
+		if e.complexity.Fields.Region == nil {
+			break
+		}
+
+		return e.complexity.Fields.Region(childComplexity), true
+
+	case "Fields.type":
+		if e.complexity.Fields.Type == nil {
+			break
+		}
+
+		return e.complexity.Fields.Type(childComplexity), true
+
 	case "Fokontany.code":
 		if e.complexity.Fokontany.Code == nil {
 			break
@@ -358,6 +495,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Fokontany.Commune(childComplexity), true
+
+	case "Fokontany.coordinates":
+		if e.complexity.Fokontany.Coordinates == nil {
+			break
+		}
+
+		return e.complexity.Fokontany.Coordinates(childComplexity), true
+
+	case "Fokontany.country":
+		if e.complexity.Fokontany.Country == nil {
+			break
+		}
+
+		return e.complexity.Fokontany.Country(childComplexity), true
 
 	case "Fokontany.district":
 		if e.complexity.Fokontany.District == nil {
@@ -386,6 +537,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Fokontany.Name(childComplexity), true
+
+	case "Fokontany.point":
+		if e.complexity.Fokontany.Point == nil {
+			break
+		}
+
+		return e.complexity.Fokontany.Point(childComplexity), true
 
 	case "Fokontany.province":
 		if e.complexity.Fokontany.Province == nil {
@@ -436,6 +594,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Geometry.Type(childComplexity), true
 
+	case "Hit.fields":
+		if e.complexity.Hit.Fields == nil {
+			break
+		}
+
+		return e.complexity.Hit.Fields(childComplexity), true
+
+	case "Hit.id":
+		if e.complexity.Hit.ID == nil {
+			break
+		}
+
+		return e.complexity.Hit.ID(childComplexity), true
+
+	case "Hit.score":
+		if e.complexity.Hit.Score == nil {
+			break
+		}
+
+		return e.complexity.Hit.Score(childComplexity), true
+
 	case "MultiPolygon.coordinates":
 		if e.complexity.MultiPolygon.Coordinates == nil {
 			break
@@ -481,7 +660,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.AllFokontany(childComplexity, args["after"].(*string), args["size"].(*int)), true
+		return e.complexity.Query.AllFokontany(childComplexity, args["skip"].(*int), args["size"].(*int)), true
 
 	case "Query.commune":
 		if e.complexity.Query.Commune == nil {
@@ -505,7 +684,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Communes(childComplexity, args["after"].(*string), args["size"].(*int)), true
+		return e.complexity.Query.Communes(childComplexity, args["skip"].(*int), args["size"].(*int)), true
 
 	case "Query.countCommunes":
 		if e.complexity.Query.CountCommunes == nil {
@@ -557,7 +736,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Districts(childComplexity, args["after"].(*string), args["size"].(*int)), true
+		return e.complexity.Query.Districts(childComplexity, args["skip"].(*int), args["size"].(*int)), true
 
 	case "Query.fokontany":
 		if e.complexity.Query.Fokontany == nil {
@@ -593,7 +772,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Regions(childComplexity, args["after"].(*string), args["size"].(*int)), true
+		return e.complexity.Query.Regions(childComplexity, args["skip"].(*int), args["size"].(*int)), true
 
 	case "Query.search":
 		if e.complexity.Query.Search == nil {
@@ -613,6 +792,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Region.Code(childComplexity), true
+
+	case "Region.coordinates":
+		if e.complexity.Region.Coordinates == nil {
+			break
+		}
+
+		return e.complexity.Region.Coordinates(childComplexity), true
+
+	case "Region.country":
+		if e.complexity.Region.Country == nil {
+			break
+		}
+
+		return e.complexity.Region.Country(childComplexity), true
 
 	case "Region.geometry":
 		if e.complexity.Region.Geometry == nil {
@@ -635,6 +828,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Region.Name(childComplexity), true
 
+	case "Region.point":
+		if e.complexity.Region.Point == nil {
+			break
+		}
+
+		return e.complexity.Region.Point(childComplexity), true
+
 	case "Region.province":
 		if e.complexity.Region.Province == nil {
 			break
@@ -656,19 +856,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.RegionList.Data(childComplexity), true
 
-	case "Results.communes":
-		if e.complexity.Results.Communes == nil {
+	case "Results.commune":
+		if e.complexity.Results.Commune == nil {
 			break
 		}
 
-		return e.complexity.Results.Communes(childComplexity), true
+		return e.complexity.Results.Commune(childComplexity), true
 
-	case "Results.districts":
-		if e.complexity.Results.Districts == nil {
+	case "Results.district":
+		if e.complexity.Results.District == nil {
 			break
 		}
 
-		return e.complexity.Results.Districts(childComplexity), true
+		return e.complexity.Results.District(childComplexity), true
 
 	case "Results.fokontany":
 		if e.complexity.Results.Fokontany == nil {
@@ -677,12 +877,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Results.Fokontany(childComplexity), true
 
-	case "Results.regions":
-		if e.complexity.Results.Regions == nil {
+	case "Results.hits":
+		if e.complexity.Results.Hits == nil {
 			break
 		}
 
-		return e.complexity.Results.Regions(childComplexity), true
+		return e.complexity.Results.Hits(childComplexity), true
+
+	case "Results.region":
+		if e.complexity.Results.Region == nil {
+			break
+		}
+
+		return e.complexity.Results.Region(childComplexity), true
 
 	case "Todo.done":
 		if e.complexity.Todo.Done == nil {
@@ -818,6 +1025,9 @@ type Commune {
   code: String
   district: String
   region: String
+  country: String
+  coordinates: [[[Float!]]]
+  point: [Float!]
   geometry: Geometry
 }
 
@@ -830,6 +1040,7 @@ type Country {
   id: ID
   name: String
   code: String
+  coordinates: [[[Float!]]]
   geometry: MultiPolygon
 }
 
@@ -839,6 +1050,9 @@ type District {
   province: String
   code: String
   region: String
+  country: String
+  coordinates: [[[Float!]]]
+  point: [Float!]
   geometry: Geometry
 }
 
@@ -855,6 +1069,9 @@ type Fokontany {
   commune: String
   district: String
   region: String
+  country: String
+  coordinates: [[[Float!]]]
+  point: [Float!]
   geometry: Geometry
 }
 
@@ -885,6 +1102,9 @@ type Region {
   province: String
   code: String
   geometry: Geometry
+  country: String
+  coordinates: [[[Float!]]]
+  point: [Float!]
 }
 
 type RegionList {
@@ -892,27 +1112,44 @@ type RegionList {
   after: Region
 }
 
-type Results {
-  regions: [Region]
-  districts: [District]
-  communes: [Commune]
-  fokontany: [Fokontany]
+type Fields {
+  commune: String
+  country: String
+  district: String
+  fokontany: String
+  name: String
+  province: String
+  region: String
+  type: String
 }
 
+type Hit {
+  id: ID
+  score: Float
+  fields: Fields
+}
+
+type Results {
+  region: Region
+  district: District
+  commune: Commune
+  fokontany: Fokontany
+  hits: [Hit]
+}
 
 type Query {
   commune(id: ID!): Commune
-  communes(after: ID, size: Int): CommuneList
-  countCommunes: Int
+  communes(skip: Int, size: Int): CommuneList
+  countCommunes: Int!
   district(id: ID!): District
-  districts(after: ID, size: Int): DistrictList
-  countDistricts: Int
+  districts(skip: Int, size: Int): DistrictList
+  countDistricts: Int!
   fokontany(id: ID!): Fokontany
-  allFokontany(after: ID, size: Int): FokontanyList
-  countFokontany: Int
+  allFokontany(skip: Int, size: Int): FokontanyList
+  countFokontany: Int!
   region(id: ID!): Region
-  regions(after: ID, size: Int): RegionList
-  countRegions: Int
+  regions(skip: Int, size: Int): RegionList
+  countRegions: Int!
   search(keyword: String!): Results
 }
 
@@ -946,15 +1183,15 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 func (ec *executionContext) field_Query_allFokontany_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *string
-	if tmp, ok := rawArgs["after"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
-		arg0, err = ec.unmarshalOID2ᚖstring(ctx, tmp)
+	var arg0 *int
+	if tmp, ok := rawArgs["skip"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("skip"))
+		arg0, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["after"] = arg0
+	args["skip"] = arg0
 	var arg1 *int
 	if tmp, ok := rawArgs["size"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("size"))
@@ -985,15 +1222,15 @@ func (ec *executionContext) field_Query_commune_args(ctx context.Context, rawArg
 func (ec *executionContext) field_Query_communes_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *string
-	if tmp, ok := rawArgs["after"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
-		arg0, err = ec.unmarshalOID2ᚖstring(ctx, tmp)
+	var arg0 *int
+	if tmp, ok := rawArgs["skip"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("skip"))
+		arg0, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["after"] = arg0
+	args["skip"] = arg0
 	var arg1 *int
 	if tmp, ok := rawArgs["size"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("size"))
@@ -1024,15 +1261,15 @@ func (ec *executionContext) field_Query_district_args(ctx context.Context, rawAr
 func (ec *executionContext) field_Query_districts_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *string
-	if tmp, ok := rawArgs["after"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
-		arg0, err = ec.unmarshalOID2ᚖstring(ctx, tmp)
+	var arg0 *int
+	if tmp, ok := rawArgs["skip"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("skip"))
+		arg0, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["after"] = arg0
+	args["skip"] = arg0
 	var arg1 *int
 	if tmp, ok := rawArgs["size"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("size"))
@@ -1078,15 +1315,15 @@ func (ec *executionContext) field_Query_region_args(ctx context.Context, rawArgs
 func (ec *executionContext) field_Query_regions_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *string
-	if tmp, ok := rawArgs["after"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
-		arg0, err = ec.unmarshalOID2ᚖstring(ctx, tmp)
+	var arg0 *int
+	if tmp, ok := rawArgs["skip"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("skip"))
+		arg0, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["after"] = arg0
+	args["skip"] = arg0
 	var arg1 *int
 	if tmp, ok := rawArgs["size"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("size"))
@@ -1398,6 +1635,129 @@ func (ec *executionContext) fieldContext_Commune_region(ctx context.Context, fie
 	return fc, nil
 }
 
+func (ec *executionContext) _Commune_country(ctx context.Context, field graphql.CollectedField, obj *model.Commune) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commune_country(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Country, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commune_country(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commune",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commune_coordinates(ctx context.Context, field graphql.CollectedField, obj *model.Commune) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commune_coordinates(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Coordinates, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([][][]float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚕᚕᚕfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commune_coordinates(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commune",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commune_point(ctx context.Context, field graphql.CollectedField, obj *model.Commune) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commune_point(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Point, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚕfloat64ᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commune_point(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commune",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Commune_geometry(ctx context.Context, field graphql.CollectedField, obj *model.Commune) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Commune_geometry(ctx, field)
 	if err != nil {
@@ -1495,6 +1855,12 @@ func (ec *executionContext) fieldContext_CommuneList_data(ctx context.Context, f
 				return ec.fieldContext_Commune_district(ctx, field)
 			case "region":
 				return ec.fieldContext_Commune_region(ctx, field)
+			case "country":
+				return ec.fieldContext_Commune_country(ctx, field)
+			case "coordinates":
+				return ec.fieldContext_Commune_coordinates(ctx, field)
+			case "point":
+				return ec.fieldContext_Commune_point(ctx, field)
 			case "geometry":
 				return ec.fieldContext_Commune_geometry(ctx, field)
 			}
@@ -1552,6 +1918,12 @@ func (ec *executionContext) fieldContext_CommuneList_after(ctx context.Context, 
 				return ec.fieldContext_Commune_district(ctx, field)
 			case "region":
 				return ec.fieldContext_Commune_region(ctx, field)
+			case "country":
+				return ec.fieldContext_Commune_country(ctx, field)
+			case "coordinates":
+				return ec.fieldContext_Commune_coordinates(ctx, field)
+			case "point":
+				return ec.fieldContext_Commune_point(ctx, field)
 			case "geometry":
 				return ec.fieldContext_Commune_geometry(ctx, field)
 			}
@@ -1679,6 +2051,47 @@ func (ec *executionContext) fieldContext_Country_code(ctx context.Context, field
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Country_coordinates(ctx context.Context, field graphql.CollectedField, obj *model.Country) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Country_coordinates(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Coordinates, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([][][]float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚕᚕᚕfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Country_coordinates(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Country",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
 		},
 	}
 	return fc, nil
@@ -1936,6 +2349,129 @@ func (ec *executionContext) fieldContext_District_region(ctx context.Context, fi
 	return fc, nil
 }
 
+func (ec *executionContext) _District_country(ctx context.Context, field graphql.CollectedField, obj *model.District) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_District_country(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Country, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_District_country(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "District",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _District_coordinates(ctx context.Context, field graphql.CollectedField, obj *model.District) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_District_coordinates(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Coordinates, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([][][]float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚕᚕᚕfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_District_coordinates(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "District",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _District_point(ctx context.Context, field graphql.CollectedField, obj *model.District) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_District_point(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Point, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚕfloat64ᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_District_point(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "District",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _District_geometry(ctx context.Context, field graphql.CollectedField, obj *model.District) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_District_geometry(ctx, field)
 	if err != nil {
@@ -2031,6 +2567,12 @@ func (ec *executionContext) fieldContext_DistrictList_data(ctx context.Context, 
 				return ec.fieldContext_District_code(ctx, field)
 			case "region":
 				return ec.fieldContext_District_region(ctx, field)
+			case "country":
+				return ec.fieldContext_District_country(ctx, field)
+			case "coordinates":
+				return ec.fieldContext_District_coordinates(ctx, field)
+			case "point":
+				return ec.fieldContext_District_point(ctx, field)
 			case "geometry":
 				return ec.fieldContext_District_geometry(ctx, field)
 			}
@@ -2086,10 +2628,344 @@ func (ec *executionContext) fieldContext_DistrictList_after(ctx context.Context,
 				return ec.fieldContext_District_code(ctx, field)
 			case "region":
 				return ec.fieldContext_District_region(ctx, field)
+			case "country":
+				return ec.fieldContext_District_country(ctx, field)
+			case "coordinates":
+				return ec.fieldContext_District_coordinates(ctx, field)
+			case "point":
+				return ec.fieldContext_District_point(ctx, field)
 			case "geometry":
 				return ec.fieldContext_District_geometry(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type District", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Fields_commune(ctx context.Context, field graphql.CollectedField, obj *model.Fields) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Fields_commune(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Commune, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Fields_commune(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Fields",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Fields_country(ctx context.Context, field graphql.CollectedField, obj *model.Fields) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Fields_country(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Country, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Fields_country(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Fields",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Fields_district(ctx context.Context, field graphql.CollectedField, obj *model.Fields) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Fields_district(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.District, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Fields_district(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Fields",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Fields_fokontany(ctx context.Context, field graphql.CollectedField, obj *model.Fields) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Fields_fokontany(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Fokontany, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Fields_fokontany(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Fields",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Fields_name(ctx context.Context, field graphql.CollectedField, obj *model.Fields) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Fields_name(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Fields_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Fields",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Fields_province(ctx context.Context, field graphql.CollectedField, obj *model.Fields) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Fields_province(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Province, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Fields_province(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Fields",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Fields_region(ctx context.Context, field graphql.CollectedField, obj *model.Fields) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Fields_region(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Region, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Fields_region(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Fields",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Fields_type(ctx context.Context, field graphql.CollectedField, obj *model.Fields) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Fields_type(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Type, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Fields_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Fields",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -2382,6 +3258,129 @@ func (ec *executionContext) fieldContext_Fokontany_region(ctx context.Context, f
 	return fc, nil
 }
 
+func (ec *executionContext) _Fokontany_country(ctx context.Context, field graphql.CollectedField, obj *model.Fokontany) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Fokontany_country(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Country, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Fokontany_country(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Fokontany",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Fokontany_coordinates(ctx context.Context, field graphql.CollectedField, obj *model.Fokontany) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Fokontany_coordinates(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Coordinates, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([][][]float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚕᚕᚕfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Fokontany_coordinates(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Fokontany",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Fokontany_point(ctx context.Context, field graphql.CollectedField, obj *model.Fokontany) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Fokontany_point(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Point, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚕfloat64ᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Fokontany_point(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Fokontany",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Fokontany_geometry(ctx context.Context, field graphql.CollectedField, obj *model.Fokontany) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Fokontany_geometry(ctx, field)
 	if err != nil {
@@ -2481,6 +3480,12 @@ func (ec *executionContext) fieldContext_FokontanyList_data(ctx context.Context,
 				return ec.fieldContext_Fokontany_district(ctx, field)
 			case "region":
 				return ec.fieldContext_Fokontany_region(ctx, field)
+			case "country":
+				return ec.fieldContext_Fokontany_country(ctx, field)
+			case "coordinates":
+				return ec.fieldContext_Fokontany_coordinates(ctx, field)
+			case "point":
+				return ec.fieldContext_Fokontany_point(ctx, field)
 			case "geometry":
 				return ec.fieldContext_Fokontany_geometry(ctx, field)
 			}
@@ -2540,6 +3545,12 @@ func (ec *executionContext) fieldContext_FokontanyList_after(ctx context.Context
 				return ec.fieldContext_Fokontany_district(ctx, field)
 			case "region":
 				return ec.fieldContext_Fokontany_region(ctx, field)
+			case "country":
+				return ec.fieldContext_Fokontany_country(ctx, field)
+			case "coordinates":
+				return ec.fieldContext_Fokontany_coordinates(ctx, field)
+			case "point":
+				return ec.fieldContext_Fokontany_point(ctx, field)
 			case "geometry":
 				return ec.fieldContext_Fokontany_geometry(ctx, field)
 			}
@@ -2679,6 +3690,147 @@ func (ec *executionContext) fieldContext_Geometry_multipolygon(ctx context.Conte
 				return ec.fieldContext_MultiPolygon_coordinates(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type MultiPolygon", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Hit_id(ctx context.Context, field graphql.CollectedField, obj *model.Hit) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Hit_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOID2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Hit_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Hit",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Hit_score(ctx context.Context, field graphql.CollectedField, obj *model.Hit) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Hit_score(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Score, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Hit_score(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Hit",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Hit_fields(ctx context.Context, field graphql.CollectedField, obj *model.Hit) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Hit_fields(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Fields, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Fields)
+	fc.Result = res
+	return ec.marshalOFields2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐFields(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Hit_fields(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Hit",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "commune":
+				return ec.fieldContext_Fields_commune(ctx, field)
+			case "country":
+				return ec.fieldContext_Fields_country(ctx, field)
+			case "district":
+				return ec.fieldContext_Fields_district(ctx, field)
+			case "fokontany":
+				return ec.fieldContext_Fields_fokontany(ctx, field)
+			case "name":
+				return ec.fieldContext_Fields_name(ctx, field)
+			case "province":
+				return ec.fieldContext_Fields_province(ctx, field)
+			case "region":
+				return ec.fieldContext_Fields_region(ctx, field)
+			case "type":
+				return ec.fieldContext_Fields_type(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Fields", field.Name)
 		},
 	}
 	return fc, nil
@@ -2937,6 +4089,12 @@ func (ec *executionContext) fieldContext_Query_commune(ctx context.Context, fiel
 				return ec.fieldContext_Commune_district(ctx, field)
 			case "region":
 				return ec.fieldContext_Commune_region(ctx, field)
+			case "country":
+				return ec.fieldContext_Commune_country(ctx, field)
+			case "coordinates":
+				return ec.fieldContext_Commune_coordinates(ctx, field)
+			case "point":
+				return ec.fieldContext_Commune_point(ctx, field)
 			case "geometry":
 				return ec.fieldContext_Commune_geometry(ctx, field)
 			}
@@ -2971,7 +4129,7 @@ func (ec *executionContext) _Query_communes(ctx context.Context, field graphql.C
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Communes(rctx, fc.Args["after"].(*string), fc.Args["size"].(*int))
+		return ec.resolvers.Query().Communes(rctx, fc.Args["skip"].(*int), fc.Args["size"].(*int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3036,11 +4194,14 @@ func (ec *executionContext) _Query_countCommunes(ctx context.Context, field grap
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*int)
+	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_countCommunes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3102,6 +4263,12 @@ func (ec *executionContext) fieldContext_Query_district(ctx context.Context, fie
 				return ec.fieldContext_District_code(ctx, field)
 			case "region":
 				return ec.fieldContext_District_region(ctx, field)
+			case "country":
+				return ec.fieldContext_District_country(ctx, field)
+			case "coordinates":
+				return ec.fieldContext_District_coordinates(ctx, field)
+			case "point":
+				return ec.fieldContext_District_point(ctx, field)
 			case "geometry":
 				return ec.fieldContext_District_geometry(ctx, field)
 			}
@@ -3136,7 +4303,7 @@ func (ec *executionContext) _Query_districts(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Districts(rctx, fc.Args["after"].(*string), fc.Args["size"].(*int))
+		return ec.resolvers.Query().Districts(rctx, fc.Args["skip"].(*int), fc.Args["size"].(*int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3201,11 +4368,14 @@ func (ec *executionContext) _Query_countDistricts(ctx context.Context, field gra
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*int)
+	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_countDistricts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3271,6 +4441,12 @@ func (ec *executionContext) fieldContext_Query_fokontany(ctx context.Context, fi
 				return ec.fieldContext_Fokontany_district(ctx, field)
 			case "region":
 				return ec.fieldContext_Fokontany_region(ctx, field)
+			case "country":
+				return ec.fieldContext_Fokontany_country(ctx, field)
+			case "coordinates":
+				return ec.fieldContext_Fokontany_coordinates(ctx, field)
+			case "point":
+				return ec.fieldContext_Fokontany_point(ctx, field)
 			case "geometry":
 				return ec.fieldContext_Fokontany_geometry(ctx, field)
 			}
@@ -3305,7 +4481,7 @@ func (ec *executionContext) _Query_allFokontany(ctx context.Context, field graph
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().AllFokontany(rctx, fc.Args["after"].(*string), fc.Args["size"].(*int))
+		return ec.resolvers.Query().AllFokontany(rctx, fc.Args["skip"].(*int), fc.Args["size"].(*int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3370,11 +4546,14 @@ func (ec *executionContext) _Query_countFokontany(ctx context.Context, field gra
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*int)
+	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_countFokontany(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3436,6 +4615,12 @@ func (ec *executionContext) fieldContext_Query_region(ctx context.Context, field
 				return ec.fieldContext_Region_code(ctx, field)
 			case "geometry":
 				return ec.fieldContext_Region_geometry(ctx, field)
+			case "country":
+				return ec.fieldContext_Region_country(ctx, field)
+			case "coordinates":
+				return ec.fieldContext_Region_coordinates(ctx, field)
+			case "point":
+				return ec.fieldContext_Region_point(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Region", field.Name)
 		},
@@ -3468,7 +4653,7 @@ func (ec *executionContext) _Query_regions(ctx context.Context, field graphql.Co
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Regions(rctx, fc.Args["after"].(*string), fc.Args["size"].(*int))
+		return ec.resolvers.Query().Regions(rctx, fc.Args["skip"].(*int), fc.Args["size"].(*int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3533,11 +4718,14 @@ func (ec *executionContext) _Query_countRegions(ctx context.Context, field graph
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*int)
+	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_countRegions(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3589,14 +4777,16 @@ func (ec *executionContext) fieldContext_Query_search(ctx context.Context, field
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "regions":
-				return ec.fieldContext_Results_regions(ctx, field)
-			case "districts":
-				return ec.fieldContext_Results_districts(ctx, field)
-			case "communes":
-				return ec.fieldContext_Results_communes(ctx, field)
+			case "region":
+				return ec.fieldContext_Results_region(ctx, field)
+			case "district":
+				return ec.fieldContext_Results_district(ctx, field)
+			case "commune":
+				return ec.fieldContext_Results_commune(ctx, field)
 			case "fokontany":
 				return ec.fieldContext_Results_fokontany(ctx, field)
+			case "hits":
+				return ec.fieldContext_Results_hits(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Results", field.Name)
 		},
@@ -3957,6 +5147,129 @@ func (ec *executionContext) fieldContext_Region_geometry(ctx context.Context, fi
 	return fc, nil
 }
 
+func (ec *executionContext) _Region_country(ctx context.Context, field graphql.CollectedField, obj *model.Region) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Region_country(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Country, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Region_country(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Region",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Region_coordinates(ctx context.Context, field graphql.CollectedField, obj *model.Region) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Region_coordinates(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Coordinates, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([][][]float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚕᚕᚕfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Region_coordinates(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Region",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Region_point(ctx context.Context, field graphql.CollectedField, obj *model.Region) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Region_point(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Point, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚕfloat64ᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Region_point(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Region",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _RegionList_data(ctx context.Context, field graphql.CollectedField, obj *model.RegionList) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_RegionList_data(ctx, field)
 	if err != nil {
@@ -4003,6 +5316,12 @@ func (ec *executionContext) fieldContext_RegionList_data(ctx context.Context, fi
 				return ec.fieldContext_Region_code(ctx, field)
 			case "geometry":
 				return ec.fieldContext_Region_geometry(ctx, field)
+			case "country":
+				return ec.fieldContext_Region_country(ctx, field)
+			case "coordinates":
+				return ec.fieldContext_Region_coordinates(ctx, field)
+			case "point":
+				return ec.fieldContext_Region_point(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Region", field.Name)
 		},
@@ -4056,6 +5375,12 @@ func (ec *executionContext) fieldContext_RegionList_after(ctx context.Context, f
 				return ec.fieldContext_Region_code(ctx, field)
 			case "geometry":
 				return ec.fieldContext_Region_geometry(ctx, field)
+			case "country":
+				return ec.fieldContext_Region_country(ctx, field)
+			case "coordinates":
+				return ec.fieldContext_Region_coordinates(ctx, field)
+			case "point":
+				return ec.fieldContext_Region_point(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Region", field.Name)
 		},
@@ -4063,8 +5388,8 @@ func (ec *executionContext) fieldContext_RegionList_after(ctx context.Context, f
 	return fc, nil
 }
 
-func (ec *executionContext) _Results_regions(ctx context.Context, field graphql.CollectedField, obj *model.Results) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Results_regions(ctx, field)
+func (ec *executionContext) _Results_region(ctx context.Context, field graphql.CollectedField, obj *model.Results) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Results_region(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -4077,7 +5402,7 @@ func (ec *executionContext) _Results_regions(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Regions, nil
+		return obj.Region, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4086,12 +5411,12 @@ func (ec *executionContext) _Results_regions(ctx context.Context, field graphql.
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Region)
+	res := resTmp.(*model.Region)
 	fc.Result = res
-	return ec.marshalORegion2ᚕᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐRegion(ctx, field.Selections, res)
+	return ec.marshalORegion2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐRegion(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Results_regions(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Results_region(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Results",
 		Field:      field,
@@ -4109,6 +5434,12 @@ func (ec *executionContext) fieldContext_Results_regions(ctx context.Context, fi
 				return ec.fieldContext_Region_code(ctx, field)
 			case "geometry":
 				return ec.fieldContext_Region_geometry(ctx, field)
+			case "country":
+				return ec.fieldContext_Region_country(ctx, field)
+			case "coordinates":
+				return ec.fieldContext_Region_coordinates(ctx, field)
+			case "point":
+				return ec.fieldContext_Region_point(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Region", field.Name)
 		},
@@ -4116,8 +5447,8 @@ func (ec *executionContext) fieldContext_Results_regions(ctx context.Context, fi
 	return fc, nil
 }
 
-func (ec *executionContext) _Results_districts(ctx context.Context, field graphql.CollectedField, obj *model.Results) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Results_districts(ctx, field)
+func (ec *executionContext) _Results_district(ctx context.Context, field graphql.CollectedField, obj *model.Results) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Results_district(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -4130,7 +5461,7 @@ func (ec *executionContext) _Results_districts(ctx context.Context, field graphq
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Districts, nil
+		return obj.District, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4139,12 +5470,12 @@ func (ec *executionContext) _Results_districts(ctx context.Context, field graphq
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*model.District)
+	res := resTmp.(*model.District)
 	fc.Result = res
-	return ec.marshalODistrict2ᚕᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐDistrict(ctx, field.Selections, res)
+	return ec.marshalODistrict2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐDistrict(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Results_districts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Results_district(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Results",
 		Field:      field,
@@ -4162,6 +5493,12 @@ func (ec *executionContext) fieldContext_Results_districts(ctx context.Context, 
 				return ec.fieldContext_District_code(ctx, field)
 			case "region":
 				return ec.fieldContext_District_region(ctx, field)
+			case "country":
+				return ec.fieldContext_District_country(ctx, field)
+			case "coordinates":
+				return ec.fieldContext_District_coordinates(ctx, field)
+			case "point":
+				return ec.fieldContext_District_point(ctx, field)
 			case "geometry":
 				return ec.fieldContext_District_geometry(ctx, field)
 			}
@@ -4171,8 +5508,8 @@ func (ec *executionContext) fieldContext_Results_districts(ctx context.Context, 
 	return fc, nil
 }
 
-func (ec *executionContext) _Results_communes(ctx context.Context, field graphql.CollectedField, obj *model.Results) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Results_communes(ctx, field)
+func (ec *executionContext) _Results_commune(ctx context.Context, field graphql.CollectedField, obj *model.Results) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Results_commune(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -4185,7 +5522,7 @@ func (ec *executionContext) _Results_communes(ctx context.Context, field graphql
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Communes, nil
+		return obj.Commune, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4194,12 +5531,12 @@ func (ec *executionContext) _Results_communes(ctx context.Context, field graphql
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Commune)
+	res := resTmp.(*model.Commune)
 	fc.Result = res
-	return ec.marshalOCommune2ᚕᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐCommune(ctx, field.Selections, res)
+	return ec.marshalOCommune2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐCommune(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Results_communes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Results_commune(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Results",
 		Field:      field,
@@ -4219,6 +5556,12 @@ func (ec *executionContext) fieldContext_Results_communes(ctx context.Context, f
 				return ec.fieldContext_Commune_district(ctx, field)
 			case "region":
 				return ec.fieldContext_Commune_region(ctx, field)
+			case "country":
+				return ec.fieldContext_Commune_country(ctx, field)
+			case "coordinates":
+				return ec.fieldContext_Commune_coordinates(ctx, field)
+			case "point":
+				return ec.fieldContext_Commune_point(ctx, field)
 			case "geometry":
 				return ec.fieldContext_Commune_geometry(ctx, field)
 			}
@@ -4251,9 +5594,9 @@ func (ec *executionContext) _Results_fokontany(ctx context.Context, field graphq
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Fokontany)
+	res := resTmp.(*model.Fokontany)
 	fc.Result = res
-	return ec.marshalOFokontany2ᚕᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐFokontany(ctx, field.Selections, res)
+	return ec.marshalOFokontany2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐFokontany(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Results_fokontany(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4278,10 +5621,65 @@ func (ec *executionContext) fieldContext_Results_fokontany(ctx context.Context, 
 				return ec.fieldContext_Fokontany_district(ctx, field)
 			case "region":
 				return ec.fieldContext_Fokontany_region(ctx, field)
+			case "country":
+				return ec.fieldContext_Fokontany_country(ctx, field)
+			case "coordinates":
+				return ec.fieldContext_Fokontany_coordinates(ctx, field)
+			case "point":
+				return ec.fieldContext_Fokontany_point(ctx, field)
 			case "geometry":
 				return ec.fieldContext_Fokontany_geometry(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Fokontany", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Results_hits(ctx context.Context, field graphql.CollectedField, obj *model.Results) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Results_hits(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Hits, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Hit)
+	fc.Result = res
+	return ec.marshalOHit2ᚕᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐHit(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Results_hits(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Results",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Hit_id(ctx, field)
+			case "score":
+				return ec.fieldContext_Hit_score(ctx, field)
+			case "fields":
+				return ec.fieldContext_Hit_fields(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Hit", field.Name)
 		},
 	}
 	return fc, nil
@@ -6372,6 +7770,18 @@ func (ec *executionContext) _Commune(ctx context.Context, sel ast.SelectionSet, 
 
 			out.Values[i] = ec._Commune_region(ctx, field, obj)
 
+		case "country":
+
+			out.Values[i] = ec._Commune_country(ctx, field, obj)
+
+		case "coordinates":
+
+			out.Values[i] = ec._Commune_coordinates(ctx, field, obj)
+
+		case "point":
+
+			out.Values[i] = ec._Commune_point(ctx, field, obj)
+
 		case "geometry":
 
 			out.Values[i] = ec._Commune_geometry(ctx, field, obj)
@@ -6438,6 +7848,10 @@ func (ec *executionContext) _Country(ctx context.Context, sel ast.SelectionSet, 
 
 			out.Values[i] = ec._Country_code(ctx, field, obj)
 
+		case "coordinates":
+
+			out.Values[i] = ec._Country_coordinates(ctx, field, obj)
+
 		case "geometry":
 
 			out.Values[i] = ec._Country_geometry(ctx, field, obj)
@@ -6483,6 +7897,18 @@ func (ec *executionContext) _District(ctx context.Context, sel ast.SelectionSet,
 
 			out.Values[i] = ec._District_region(ctx, field, obj)
 
+		case "country":
+
+			out.Values[i] = ec._District_country(ctx, field, obj)
+
+		case "coordinates":
+
+			out.Values[i] = ec._District_coordinates(ctx, field, obj)
+
+		case "point":
+
+			out.Values[i] = ec._District_point(ctx, field, obj)
+
 		case "geometry":
 
 			out.Values[i] = ec._District_geometry(ctx, field, obj)
@@ -6515,6 +7941,59 @@ func (ec *executionContext) _DistrictList(ctx context.Context, sel ast.Selection
 		case "after":
 
 			out.Values[i] = ec._DistrictList_after(ctx, field, obj)
+
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var fieldsImplementors = []string{"Fields"}
+
+func (ec *executionContext) _Fields(ctx context.Context, sel ast.SelectionSet, obj *model.Fields) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, fieldsImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Fields")
+		case "commune":
+
+			out.Values[i] = ec._Fields_commune(ctx, field, obj)
+
+		case "country":
+
+			out.Values[i] = ec._Fields_country(ctx, field, obj)
+
+		case "district":
+
+			out.Values[i] = ec._Fields_district(ctx, field, obj)
+
+		case "fokontany":
+
+			out.Values[i] = ec._Fields_fokontany(ctx, field, obj)
+
+		case "name":
+
+			out.Values[i] = ec._Fields_name(ctx, field, obj)
+
+		case "province":
+
+			out.Values[i] = ec._Fields_province(ctx, field, obj)
+
+		case "region":
+
+			out.Values[i] = ec._Fields_region(ctx, field, obj)
+
+		case "type":
+
+			out.Values[i] = ec._Fields_type(ctx, field, obj)
 
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
@@ -6564,6 +8043,18 @@ func (ec *executionContext) _Fokontany(ctx context.Context, sel ast.SelectionSet
 		case "region":
 
 			out.Values[i] = ec._Fokontany_region(ctx, field, obj)
+
+		case "country":
+
+			out.Values[i] = ec._Fokontany_country(ctx, field, obj)
+
+		case "coordinates":
+
+			out.Values[i] = ec._Fokontany_coordinates(ctx, field, obj)
+
+		case "point":
+
+			out.Values[i] = ec._Fokontany_point(ctx, field, obj)
 
 		case "geometry":
 
@@ -6630,6 +8121,39 @@ func (ec *executionContext) _Geometry(ctx context.Context, sel ast.SelectionSet,
 		case "multipolygon":
 
 			out.Values[i] = ec._Geometry_multipolygon(ctx, field, obj)
+
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var hitImplementors = []string{"Hit"}
+
+func (ec *executionContext) _Hit(ctx context.Context, sel ast.SelectionSet, obj *model.Hit) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, hitImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Hit")
+		case "id":
+
+			out.Values[i] = ec._Hit_id(ctx, field, obj)
+
+		case "score":
+
+			out.Values[i] = ec._Hit_score(ctx, field, obj)
+
+		case "fields":
+
+			out.Values[i] = ec._Hit_fields(ctx, field, obj)
 
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
@@ -6805,6 +8329,9 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_countCommunes(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
 				return res
 			}
 
@@ -6865,6 +8392,9 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_countDistricts(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
 				return res
 			}
 
@@ -6925,6 +8455,9 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_countFokontany(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
 				return res
 			}
 
@@ -6985,6 +8518,9 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_countRegions(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
 				return res
 			}
 
@@ -7068,6 +8604,18 @@ func (ec *executionContext) _Region(ctx context.Context, sel ast.SelectionSet, o
 
 			out.Values[i] = ec._Region_geometry(ctx, field, obj)
 
+		case "country":
+
+			out.Values[i] = ec._Region_country(ctx, field, obj)
+
+		case "coordinates":
+
+			out.Values[i] = ec._Region_coordinates(ctx, field, obj)
+
+		case "point":
+
+			out.Values[i] = ec._Region_point(ctx, field, obj)
+
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -7118,21 +8666,25 @@ func (ec *executionContext) _Results(ctx context.Context, sel ast.SelectionSet, 
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Results")
-		case "regions":
+		case "region":
 
-			out.Values[i] = ec._Results_regions(ctx, field, obj)
+			out.Values[i] = ec._Results_region(ctx, field, obj)
 
-		case "districts":
+		case "district":
 
-			out.Values[i] = ec._Results_districts(ctx, field, obj)
+			out.Values[i] = ec._Results_district(ctx, field, obj)
 
-		case "communes":
+		case "commune":
 
-			out.Values[i] = ec._Results_communes(ctx, field, obj)
+			out.Values[i] = ec._Results_commune(ctx, field, obj)
 
 		case "fokontany":
 
 			out.Values[i] = ec._Results_fokontany(ctx, field, obj)
+
+		case "hits":
+
+			out.Values[i] = ec._Results_hits(ctx, field, obj)
 
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
@@ -7562,6 +9114,21 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) unmarshalNFloat2float64(ctx context.Context, v interface{}) (float64, error) {
+	res, err := graphql.UnmarshalFloatContext(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNFloat2float64(ctx context.Context, sel ast.SelectionSet, v float64) graphql.Marshaler {
+	res := graphql.MarshalFloatContext(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return graphql.WrapContextMarshaler(ctx, res)
+}
+
 func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {
 	res, err := graphql.UnmarshalID(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -7569,6 +9136,21 @@ func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface
 
 func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
 	res := graphql.MarshalID(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
+	res, err := graphql.UnmarshalInt(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
+	res := graphql.MarshalInt(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -7991,6 +9573,115 @@ func (ec *executionContext) marshalODistrictList2ᚖgithubᚗcomᚋtsirysndrᚋm
 	return ec._DistrictList(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalOFields2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐFields(ctx context.Context, sel ast.SelectionSet, v *model.Fields) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Fields(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOFloat2ᚕfloat64ᚄ(ctx context.Context, v interface{}) ([]float64, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([]float64, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNFloat2float64(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOFloat2ᚕfloat64ᚄ(ctx context.Context, sel ast.SelectionSet, v []float64) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNFloat2float64(ctx, sel, v[i])
+	}
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalOFloat2ᚕᚕfloat64(ctx context.Context, v interface{}) ([][]float64, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([][]float64, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalOFloat2ᚕfloat64ᚄ(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOFloat2ᚕᚕfloat64(ctx context.Context, sel ast.SelectionSet, v [][]float64) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalOFloat2ᚕfloat64ᚄ(ctx, sel, v[i])
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalOFloat2ᚕᚕᚕfloat64(ctx context.Context, v interface{}) ([][][]float64, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([][][]float64, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalOFloat2ᚕᚕfloat64(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOFloat2ᚕᚕᚕfloat64(ctx context.Context, sel ast.SelectionSet, v [][][]float64) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalOFloat2ᚕᚕfloat64(ctx, sel, v[i])
+	}
+
+	return ret
+}
+
 func (ec *executionContext) unmarshalOFloat2ᚕᚕᚕᚕᚖfloat64(ctx context.Context, v interface{}) ([][][][]*float64, error) {
 	if v == nil {
 		return nil, nil
@@ -8195,6 +9886,54 @@ func (ec *executionContext) marshalOGeometry2ᚖgithubᚗcomᚋtsirysndrᚋmada�
 		return graphql.Null
 	}
 	return ec._Geometry(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOHit2ᚕᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐHit(ctx context.Context, sel ast.SelectionSet, v []*model.Hit) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOHit2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐHit(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOHit2ᚖgithubᚗcomᚋtsirysndrᚋmadaᚋgraphᚋmodelᚐHit(ctx context.Context, sel ast.SelectionSet, v *model.Hit) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Hit(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOID2ᚖstring(ctx context.Context, v interface{}) (*string, error) {

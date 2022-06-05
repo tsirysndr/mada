@@ -19,6 +19,12 @@ func NewCommuneService(db *sql.DB, index bleve.Index) svc.CommuneSvc {
 	return &CommuneService{db: db, index: index}
 }
 
+func (c *CommuneService) Count() (count int, err error) {
+	row := c.db.QueryRow("SELECT count(*) FROM commune")
+	err = row.Scan(&count)
+	return count, err
+}
+
 func (c *CommuneService) List(skip, limit int) (*bleve.SearchResult, error) {
 	query := bleve.NewMatchQuery("commune")
 	search := bleve.NewSearchRequest(query)
