@@ -68,7 +68,7 @@ to quickly create a Cobra application.`,
 		if id != "" {
 			result, _ := f.ShowFokontany(id)
 			if result != nil {
-				mada.FormatOrOpenFokontanyInBrowser(db, result, openInBrowser, outputInJSON)
+				mada.FormatOrOpenFokontanyInBrowser(db, index, result, openInBrowser, outputInJSON)
 			}
 			return
 		}
@@ -77,7 +77,7 @@ to quickly create a Cobra application.`,
 		if err != nil {
 			panic(err)
 		}
-		mada.FormatResultOrOpenInBrowser(db, result, openInBrowser, outputInJSON)
+		mada.FormatResultOrOpenInBrowser(db, index, result, openInBrowser, outputInJSON)
 	},
 }
 

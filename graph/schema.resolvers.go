@@ -178,12 +178,14 @@ func (r *queryResolver) Search(ctx context.Context, keyword string) (*model.Resu
 			district := v.Fields["district"].(string)
 			region := v.Fields["region"].(string)
 			country := v.Fields["country"].(string)
+			_type := v.Fields["type"].(string)
 			hit.Fields = &model.Fields{
 				Fokontany: &fokontany,
 				Commune:   &commune,
 				District:  &district,
 				Region:    &region,
 				Country:   &country,
+				Type:      &_type,
 			}
 			hits = append(hits, &hit)
 		}

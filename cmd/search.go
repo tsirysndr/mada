@@ -83,7 +83,7 @@ to quickly create a Cobra application.`,
 		if err != nil {
 			panic(err)
 		}
-		mada.FormatSearchResultOrOpenInBrowser(db, result, options)
+		mada.FormatSearchResultOrOpenInBrowser(db, index, result, options)
 	},
 }
 

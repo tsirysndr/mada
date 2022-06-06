@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import 'mapbox-gl/dist/mapbox-gl.css';
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
@@ -11,7 +12,9 @@ import Commune from "./Containers/Commune";
 import Fokontany from "./Containers/Fokontany";
 
 const client = new ApolloClient({
-  uri: process.env.REACT_APP_API_URL,
+  // eslint-disable-next-line no-restricted-globals
+  uri: location.origin + "/query",
+  // uri: 'http://localhost:8010/query',
   cache: new InMemoryCache(),
 });
 
@@ -24,8 +27,8 @@ root.render(
           <Route path="/" element={<Home />} />
           <Route path="/regions/:id" element={<Region />} />
           <Route path="/districts/:id" element={<District />} />
-          <Route path="/communes" element={<Commune />} />
-          <Route path="/fokontany" element={<Fokontany />} />
+          <Route path="/communes/:id" element={<Commune />} />
+          <Route path="/fokontany/:id" element={<Fokontany />} />
         </Routes>
       </HashRouter>
     </React.StrictMode>

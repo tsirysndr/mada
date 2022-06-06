@@ -12,19 +12,7 @@ const COMMUNE = gql`
     commune(id: $id) {
       id
       name
-      code
-      province
-      geometry {
-        type
-        polygon {
-          type
-          coordinates
-        }
-        multipolygon {
-          type
-          coordinates
-        }
-      }
+      coordinates
     }
   }
 `;
@@ -58,12 +46,8 @@ const Commune = (props) => {
 
   useEffect(() => {
     if (!loading && !error) {
-      const { geometry, name } = data.commune;
-      const { type } = geometry;
-      const [longitude, latitude] =
-        type === "Polygon"
-          ? geometry.polygon.coordinates[0][0]
-          : geometry.multipolygon.coordinates[0][0][0];
+      const { coordinates, name } = data.commune;
+      const [longitude, latitude] = coordinates[0][0][0];
       const location = {
         ...viewport,
         longitude,
@@ -77,8 +61,10 @@ const Commune = (props) => {
         features: [
           {
             type: "Feature",
-            geometry:
-              type === "Polygon" ? geometry.polygon : geometry.multipolygon,
+            geometry: {
+              type: "MultiPolygon",
+              coordinates: coordinates[0].map(x => [x]),
+            },
           },
         ],
       };

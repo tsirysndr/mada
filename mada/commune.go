@@ -49,7 +49,7 @@ func (c *CommuneService) ShowCommune(id string) (*types.Commune, error) {
 			Region:      region,
 			District:    district,
 			Country:     country,
-			Coordinates: p.(*geom.Polygon).Coords(),
+			Coordinates: p.(*geom.MultiPolygon).Coords(),
 		}, nil
 	}
 	return nil, nil

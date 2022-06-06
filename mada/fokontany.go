@@ -58,7 +58,7 @@ func (f *FokontanyService) ShowFokontany(id string) (*types.Fokontany, error) {
 			Region:      region,
 			District:    district,
 			Country:     country,
-			Coordinates: p.(*geom.Polygon).Coords(),
+			Coordinates: p.(*geom.MultiPolygon).Coords(),
 		}, nil
 	}
 

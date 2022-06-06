@@ -8,6 +8,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/blevesearch/bleve/v2"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	"github.com/rakyll/statik/fs"
@@ -18,7 +19,7 @@ import (
 
 const PORT = 8010
 
-func StartHttpServer(db *sql.DB) {
+func StartHttpServer(db *sql.DB, index bleve.Index) {
 	statikFS, _ := fs.New()
 
 	router := chi.NewRouter()
@@ -34,11 +35,6 @@ func StartHttpServer(db *sql.DB) {
 		AllowCredentials: true,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	})
-
-	index, err := InitializeBleve(db)
-	if err != nil {
-		panic(err)
-	}
 
 	r := &graph.Resolver{
 		CommuneService:   NewCommuneService(db, index),
@@ -58,7 +54,7 @@ func StartHttpServer(db *sql.DB) {
 	router.Handle("/playground", playground.Handler("GraphQL playground", "/query"))
 	router.Handle("/query", srv)
 	router.Handle("/*", http.FileServer(statikFS))
-	err = http.ListenAndServe(fmt.Sprintf("0.0.0.0:%d", PORT), router)
+	err := http.ListenAndServe(fmt.Sprintf("0.0.0.0:%d", PORT), router)
 	if err != nil {
 		log.Fatal(err)
 	}

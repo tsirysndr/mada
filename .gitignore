@@ -31,5 +31,6 @@ go.work
 *.bleve/
 bin/
 data/
+mada/geojson/*.json
 
 # End of https://www.toptal.com/developers/gitignore/api/go

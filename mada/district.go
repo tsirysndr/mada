@@ -49,7 +49,7 @@ func (d *DistrictService) ShowDistrict(id string) (*types.District, error) {
 			Name:        name,
 			Region:      region,
 			Country:     "Madagascar",
-			Coordinates: p.(*geom.Polygon).Coords(),
+			Coordinates: p.(*geom.MultiPolygon).Coords(),
 		}, nil
 	}
 	return nil, nil

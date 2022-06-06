@@ -1,0 +1,16 @@
+{
+  "name": "parser",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "gdal-async": "^3.5.0",
+    "shapefile-to-geojson": "^1.0.1",
+    "shp": "^0.0.1"
+  }
+}

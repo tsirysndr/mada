@@ -5,3 +5,6 @@ data
 *.db
 ui/node_modules/
 ui/build/
+parser/node_modules/
+mada/shp/
+.git/

@@ -68,7 +68,7 @@ to quickly create a Cobra application.`,
 		if id != "" {
 			result, _ := r.ShowRegion(id)
 			if result != nil {
-				mada.FormatOrOpenRegionInBrowser(db, result, openInBrowser, outputInJSON)
+				mada.FormatOrOpenRegionInBrowser(db, index, result, openInBrowser, outputInJSON)
 			}
 			return
 		}
@@ -77,7 +77,7 @@ to quickly create a Cobra application.`,
 		if err != nil {
 			panic(err)
 		}
-		mada.FormatResultOrOpenInBrowser(db, result, openInBrowser, outputInJSON)
+		mada.FormatResultOrOpenInBrowser(db, index, result, openInBrowser, outputInJSON)
 	},
 }
 

@@ -1026,7 +1026,7 @@ type Commune {
   district: String
   region: String
   country: String
-  coordinates: [[[Float!]]]
+  coordinates: [[[[Float!]]]]
   point: [Float!]
   geometry: Geometry
 }
@@ -1040,7 +1040,7 @@ type Country {
   id: ID
   name: String
   code: String
-  coordinates: [[[Float!]]]
+  coordinates: [[[[Float!]]]]
   geometry: MultiPolygon
 }
 
@@ -1051,7 +1051,7 @@ type District {
   code: String
   region: String
   country: String
-  coordinates: [[[Float!]]]
+  coordinates: [[[[Float!]]]]
   point: [Float!]
   geometry: Geometry
 }
@@ -1070,7 +1070,7 @@ type Fokontany {
   district: String
   region: String
   country: String
-  coordinates: [[[Float!]]]
+  coordinates: [[[[Float!]]]]
   point: [Float!]
   geometry: Geometry
 }
@@ -1103,7 +1103,7 @@ type Region {
   code: String
   geometry: Geometry
   country: String
-  coordinates: [[[Float!]]]
+  coordinates: [[[[Float!]]]]
   point: [Float!]
 }
 
@@ -1699,9 +1699,9 @@ func (ec *executionContext) _Commune_coordinates(ctx context.Context, field grap
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([][][]float64)
+	res := resTmp.([][][][]float64)
 	fc.Result = res
-	return ec.marshalOFloat2ᚕᚕᚕfloat64(ctx, field.Selections, res)
+	return ec.marshalOFloat2ᚕᚕᚕᚕfloat64(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Commune_coordinates(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2079,9 +2079,9 @@ func (ec *executionContext) _Country_coordinates(ctx context.Context, field grap
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([][][]float64)
+	res := resTmp.([][][][]float64)
 	fc.Result = res
-	return ec.marshalOFloat2ᚕᚕᚕfloat64(ctx, field.Selections, res)
+	return ec.marshalOFloat2ᚕᚕᚕᚕfloat64(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Country_coordinates(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2413,9 +2413,9 @@ func (ec *executionContext) _District_coordinates(ctx context.Context, field gra
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([][][]float64)
+	res := resTmp.([][][][]float64)
 	fc.Result = res
-	return ec.marshalOFloat2ᚕᚕᚕfloat64(ctx, field.Selections, res)
+	return ec.marshalOFloat2ᚕᚕᚕᚕfloat64(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_District_coordinates(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3322,9 +3322,9 @@ func (ec *executionContext) _Fokontany_coordinates(ctx context.Context, field gr
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([][][]float64)
+	res := resTmp.([][][][]float64)
 	fc.Result = res
-	return ec.marshalOFloat2ᚕᚕᚕfloat64(ctx, field.Selections, res)
+	return ec.marshalOFloat2ᚕᚕᚕᚕfloat64(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Fokontany_coordinates(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5211,9 +5211,9 @@ func (ec *executionContext) _Region_coordinates(ctx context.Context, field graph
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([][][]float64)
+	res := resTmp.([][][][]float64)
 	fc.Result = res
-	return ec.marshalOFloat2ᚕᚕᚕfloat64(ctx, field.Selections, res)
+	return ec.marshalOFloat2ᚕᚕᚕᚕfloat64(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Region_coordinates(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -9677,6 +9677,38 @@ func (ec *executionContext) marshalOFloat2ᚕᚕᚕfloat64(ctx context.Context, 
 	ret := make(graphql.Array, len(v))
 	for i := range v {
 		ret[i] = ec.marshalOFloat2ᚕᚕfloat64(ctx, sel, v[i])
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalOFloat2ᚕᚕᚕᚕfloat64(ctx context.Context, v interface{}) ([][][][]float64, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([][][][]float64, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalOFloat2ᚕᚕᚕfloat64(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOFloat2ᚕᚕᚕᚕfloat64(ctx context.Context, sel ast.SelectionSet, v [][][][]float64) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalOFloat2ᚕᚕᚕfloat64(ctx, sel, v[i])
 	}
 
 	return ret

@@ -59,7 +59,11 @@ to quickly create a Cobra application.`,
 		if err != nil {
 			panic(err)
 		}
-		mada.StartHttpServer(db)
+		index, err := mada.InitializeBleve(db)
+		if err != nil {
+			panic(err)
+		}
+		mada.StartHttpServer(db, index)
 	},
 }
 

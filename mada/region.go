@@ -42,7 +42,7 @@ func (r *RegionService) ShowRegion(id string) (*types.Region, error) {
 	for rows.Next() {
 		rows.Scan(&uid, &name, &g)
 		p, _ := wkt.Unmarshal(g)
-		return &types.Region{ID: uid, Name: name, Country: "Madagascar", Coordinates: p.(*geom.Polygon).Coords()}, nil
+		return &types.Region{ID: uid, Name: name, Country: "Madagascar", Coordinates: p.(*geom.MultiPolygon).Coords()}, nil
 	}
 	return nil, nil
 }

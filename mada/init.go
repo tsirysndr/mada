@@ -7,39 +7,44 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/blevesearch/bleve/v2"
-	"github.com/everystreet/go-shapefile"
 	_ "github.com/lib/pq"
 	"github.com/mitchellh/go-homedir"
+	"github.com/mitchellh/mapstructure"
 	"github.com/twpayne/go-geom"
+	"github.com/twpayne/go-geom/encoding/wkt"
 )
 
 var DATABASE_PATH string = filepath.Join(CreateConfigDir(), "mada.bleve")
 
-type Shape struct {
-	Type       string     `json:"type"`
-	Bbox       []float32  `json:"bbox"`
-	Properties Properties `json:"properties"`
-	Geom       Geometry   `json:"geometry"`
+type Feature struct {
+	Geometry   Geometry               `json:"geometry"`
+	Properties map[string]interface{} `json:"properties"`
+}
+
+type FeatureCollection struct {
+	Type     string    `json:"type"`
+	Features []Feature `json:"features"`
 }
 
 type Properties struct {
-	Adm0en    string `json:"ADM0_EN"`
-	Adm0type  string `json:"ADM0_TYPE"`
-	Adm1en    string `json:"ADM1_EN"`
-	Adm1type  string `json:"ADM1_TYPE"`
-	Adm2en    string `json:"ADM2_EN"`
-	Adm2type  string `json:"ADM2_TYPE"`
-	Adm3en    string `json:"ADM3_EN"`
-	Adm3type  string `json:"ADM3_TYPE"`
-	Adm4en    string `json:"ADM4_EN"`
-	Adm4type  string `json:"ADM4_TYPE"`
-	OldProvin string `json:"OLD_PROVIN"`
+	Adm0en    string `mapstructure:"ADM0_EN"`
+	Adm0type  string `mapstructure:"ADM0_TYPE"`
+	Adm1en    string `mapstructure:"ADM1_EN"`
+	Adm1type  string `mapstructure:"ADM1_TYPE"`
+	Adm2en    string `mapstructure:"ADM2_EN"`
+	Adm2type  string `mapstructure:"ADM2_TYPE"`
+	Adm3en    string `mapstructure:"ADM3_EN"`
+	Adm3type  string `mapstructure:"ADM3_TYPE"`
+	Adm4en    string `mapstructure:"ADM4_EN"`
+	Adm4type  string `mapstructure:"ADM4_TYPE"`
+	OldProvin string `mapstructure:"OLD_PROVIN"`
 }
 
 type Polygon struct {
@@ -55,11 +60,11 @@ type Polygon struct {
 }
 
 type Geometry struct {
-	Type        string         `json:"type"`
-	Coordinates [][]geom.Coord `json:"coordinates"`
+	Type        string           `json:"type"`
+	Coordinates [][][]geom.Coord `json:"coordinates"`
 }
 
-//go:embed shp/*
+//go:embed geojson/*
 var Assets embed.FS
 
 func Init(db *sql.DB) (bleve.Index, error) {
@@ -96,7 +101,7 @@ func Init(db *sql.DB) (bleve.Index, error) {
 		"mdg_admbnda_adm4_BNGRC_OCHA_20181031",
 	}
 	for _, filename := range filenames {
-		parseShapefile(filename, index, db)
+		parseGeoJSONfile(filename, index, db)
 	}
 
 	return index, nil
@@ -113,97 +118,75 @@ func CreateOrOpenBleve() (bleve.Index, error) {
 	return bleve.Open(DATABASE_PATH)
 }
 
-func parseShapefile(name string, index bleve.Index, db *sql.DB) {
-
-	shp, err := Assets.Open(filepath.Join("shp", fmt.Sprintf("%s.shp", name)))
-	if err != nil {
-		log.Fatal(err)
-	}
-	dbf, err := Assets.Open(filepath.Join("shp", fmt.Sprintf("%s.dbf", name)))
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	scanner := shapefile.NewScanner(shp, dbf)
+func parseGeoJSONfile(name string, index bleve.Index, db *sql.DB) {
+	geojsonfile, err := Assets.Open(filepath.Join("geojson", fmt.Sprintf("%s.json", name)))
 
 	if err != nil {
 		log.Fatal(err)
 	}
-	// Start the scanner
-	scanner.Scan()
 
-	// Call Record() to get each record in turn, until either the end of the file, or an error occurs
-	for {
-		record := scanner.Record()
-		if record == nil {
-			break
-		}
+	content, err := ioutil.ReadAll(geojsonfile)
 
-		feature := record.GeoJSONFeature()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-		jsonData, _ := json.Marshal(feature)
+	var fc FeatureCollection
+	err = json.Unmarshal(content, &fc)
 
-		h := sha256.New()
-		h.Write(jsonData)
-		id := fmt.Sprintf("%x", h.Sum(nil))
+	if err != nil {
+		log.Fatal(err)
+	}
 
-		var shape Shape
-
-		json.Unmarshal(jsonData, &shape)
-
+	for _, feature := range fc.Features {
+		var properties Properties
+		mapstructure.Decode(feature.Properties, &properties)
 		polygon := Polygon{
-			Geometry: shape.Geom,
+			Geometry: feature.Geometry,
 		}
-
 		if strings.Contains(name, "adm0") {
 			polygon.Type = "country"
-			polygon.Name = shape.Properties.Adm0en
-			polygon.Country = shape.Properties.Adm0en
+			polygon.Name = properties.Adm0en
+			polygon.Country = properties.Adm0en
 		}
 
 		if strings.Contains(name, "adm1") {
 			polygon.Type = "region"
-			polygon.Name = shape.Properties.Adm1en
-			polygon.Region = shape.Properties.Adm1en
-			polygon.Country = shape.Properties.Adm0en
-			polygon.Province = shape.Properties.OldProvin
+			polygon.Name = properties.Adm1en
+			polygon.Region = properties.Adm1en
+			polygon.Country = properties.Adm0en
+			polygon.Province = properties.OldProvin
 		}
 		if strings.Contains(name, "adm2") {
 			polygon.Type = "district"
-			polygon.Name = shape.Properties.Adm2en
-			polygon.District = shape.Properties.Adm2en
-			polygon.Region = shape.Properties.Adm1en
-			polygon.Country = shape.Properties.Adm0en
-			polygon.Province = shape.Properties.OldProvin
+			polygon.Name = properties.Adm2en
+			polygon.District = properties.Adm2en
+			polygon.Region = properties.Adm1en
+			polygon.Country = properties.Adm0en
+			polygon.Province = properties.OldProvin
 		}
 		if strings.Contains(name, "adm3") {
 			polygon.Type = "commune"
-			polygon.Name = shape.Properties.Adm3en
-			polygon.Commune = shape.Properties.Adm3en
-			polygon.District = shape.Properties.Adm2en
-			polygon.Region = shape.Properties.Adm1en
-			polygon.Country = shape.Properties.Adm0en
-			polygon.Province = shape.Properties.OldProvin
+			polygon.Name = properties.Adm3en
+			polygon.Commune = properties.Adm3en
+			polygon.District = properties.Adm2en
+			polygon.Region = properties.Adm1en
+			polygon.Country = properties.Adm0en
+			polygon.Province = properties.OldProvin
 		}
 		if strings.Contains(name, "adm4") {
 			polygon.Type = "fokontany"
-			polygon.Name = shape.Properties.Adm4en
-			polygon.Fokontany = shape.Properties.Adm4en
-			polygon.Commune = shape.Properties.Adm3en
-			polygon.District = shape.Properties.Adm2en
-			polygon.Region = shape.Properties.Adm1en
-			polygon.Country = shape.Properties.Adm0en
-			polygon.Province = shape.Properties.OldProvin
+			polygon.Name = properties.Adm4en
+			polygon.Fokontany = properties.Adm4en
+			polygon.Commune = properties.Adm3en
+			polygon.District = properties.Adm2en
+			polygon.Region = properties.Adm1en
+			polygon.Country = properties.Adm0en
+			polygon.Province = properties.OldProvin
 		}
 
-		fmt.Printf("%s - %s - %s\n", id, polygon.Type, polygon.Name)
-
-		saveToDatabase(db, index, id, polygon)
-
+		saveToDatabase(db, index, polygon)
 	}
-
-	// Err() returns the first error encountered during calls to Record()
-	scanner.Err()
 }
 
 func CreateConfigDir() string {
@@ -301,11 +284,11 @@ func createPostgresTables(db *sql.DB) {
 
 func addGeometryColumns(db *sql.DB) {
 	queries := []string{
-		"SELECT AddGeometryColumn('country', 'geom', 4326, 'POLYGON', 2);",
-		"SELECT AddGeometryColumn('region', 'geom', 4326, 'POLYGON', 2);",
-		"SELECT AddGeometryColumn('district', 'geom', 4326, 'POLYGON', 2);",
-		"SELECT AddGeometryColumn('commune', 'geom', 4326, 'POLYGON', 2);",
-		"SELECT AddGeometryColumn('fokontany', 'geom', 4326, 'POLYGON', 2);",
+		"SELECT AddGeometryColumn('country', 'geom', 4326, 'MULTIPOLYGON', 2);",
+		"SELECT AddGeometryColumn('region', 'geom', 4326, 'MULTIPOLYGON', 2);",
+		"SELECT AddGeometryColumn('district', 'geom', 4326, 'MULTIPOLYGON', 2);",
+		"SELECT AddGeometryColumn('commune', 'geom', 4326, 'MULTIPOLYGON', 2);",
+		"SELECT AddGeometryColumn('fokontany', 'geom', 4326, 'MULTIPOLYGON', 2);",
 		"SELECT CreateSpatialIndex('country', 'geom');",
 		"SELECT CreateSpatialIndex('region', 'geom');",
 		"SELECT CreateSpatialIndex('district', 'geom');",
@@ -320,11 +303,11 @@ func addGeometryColumns(db *sql.DB) {
 
 func addPostgresGeometryColumns(db *sql.DB) {
 	queries := []string{
-		"SELECT AddGeometryColumn('public', 'country', 'geom', 4326, 'POLYGON', 2);",
-		"SELECT AddGeometryColumn('public', 'region', 'geom', 4326, 'POLYGON', 2);",
-		"SELECT AddGeometryColumn('public', 'district', 'geom', 4326, 'POLYGON', 2);",
-		"SELECT AddGeometryColumn('public', 'commune', 'geom', 4326, 'POLYGON', 2);",
-		"SELECT AddGeometryColumn('public', 'fokontany', 'geom', 4326, 'POLYGON', 2);",
+		"SELECT AddGeometryColumn('public', 'country', 'geom', 4326, 'MULTIPOLYGON', 2);",
+		"SELECT AddGeometryColumn('public', 'region', 'geom', 4326, 'MULTIPOLYGON', 2);",
+		"SELECT AddGeometryColumn('public', 'district', 'geom', 4326, 'MULTIPOLYGON', 2);",
+		"SELECT AddGeometryColumn('public', 'commune', 'geom', 4326, 'MULTIPOLYGON', 2);",
+		"SELECT AddGeometryColumn('public', 'fokontany', 'geom', 4326, 'MULTIPOLYGON', 2);",
 	}
 	for _, query := range queries {
 		db.Exec(query)
@@ -332,32 +315,30 @@ func addPostgresGeometryColumns(db *sql.DB) {
 
 }
 
-func coordinatesToText(polygon Polygon) string {
-	coordstr := "("
-	for _, coords := range polygon.Geometry.Coordinates[0] {
-		coordstr += fmt.Sprintf("%f %f, ", coords[0], coords[1])
-	}
-
-	coordstr = strings.TrimSuffix(coordstr, ", ")
-
-	coordstr += ")"
-
-	return coordstr
-}
-
-func saveToDatabase(db *sql.DB, index bleve.Index, id string, polygon Polygon) {
-	err := index.Index(id, polygon)
+func saveToDatabase(db *sql.DB, index bleve.Index, polygon Polygon) {
+	g := geom.NewMultiPolygon(geom.XY).MustSetCoords(polygon.Geometry.Coordinates).SetSRID(4326)
+	coordsText, err := wkt.Marshal(g)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	coordsText := coordinatesToText(polygon)
+	h := sha256.New()
+	h.Write([]byte(coordsText))
+	id := fmt.Sprintf("%x", h.Sum(nil))
 
-	geom := fmt.Sprintf("GeomFromText('POLYGON(%s)', 4326)", coordsText)
+	fmt.Printf("%s - %s - %s\n", id, polygon.Type, polygon.Name)
+
+	err = index.Index(id, polygon)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	geom := fmt.Sprintf("GeomFromText('%s', 4326)", coordsText)
 
 	if os.Getenv("MADA_POSTGRES_URL") != "" {
-		geom = fmt.Sprintf("ST_GeomFromText('POLYGON(%s)', 4326)", coordsText)
+		geom = fmt.Sprintf("ST_GeomFromText('%s', 4326)", coordsText)
 	}
 
 	q := ""

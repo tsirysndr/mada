@@ -1,12 +1,13 @@
 import React, { Component } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import _ from "lodash";
 
-function withRouter( Child ) {
-  return ( props ) => {
+function withRouter(Child) {
+  return (props) => {
     const location = useLocation();
     const navigate = useNavigate();
-    return <Child { ...props } navigate={ navigate } location={ location } />;
-  }
+    return <Child {...props} navigate={navigate} location={location} />;
+  };
 }
 
 class PopoverList extends Component {
@@ -22,14 +23,31 @@ class PopoverList extends Component {
   }
 
   render() {
-    const { keyword, filter, loading, error, data, navigate } = this.props;
+    const { keyword, filter, loading, error, search, navigate } = this.props;
     const fokontany =
-      keyword === "" ? this.props.fokontany : data.search.fokontany;
+      keyword === ""
+        ? this.props.fokontany
+        : _.defaultTo(search.hits, [])
+            .filter((x) => x.fields.type === "fokontany")
+            .map((x) => ({ id: x.id, name: x.fields.fokontany }));
     const communes =
-      keyword === "" ? this.props.communes : data.search.communes;
+      keyword === ""
+        ? this.props.communes
+        : _.defaultTo(search.hits, [])
+            .filter((x) => x.fields.type === "commune")
+            .map((x) => ({ id: x.id, name: x.fields.commune }));
     const districts =
-      keyword === "" ? this.props.districts : data.search.districts;
-    const regions = keyword === "" ? this.props.regions : data.search.regions;
+      keyword === ""
+        ? this.props.districts
+        : _.defaultTo(search.hits, [])
+            .filter((x) => x.fields.type === "district")
+            .map((x) => ({ id: x.id, name: x.fields.district }));
+    const regions =
+      keyword === ""
+        ? this.props.regions
+        : _.defaultTo(search.hits, [])
+            .filter((x) => x.fields.type === "region")
+            .map((x) => ({ id: x.id, name: x.fields.region }));
     return (
       <div ref="iScroll" style={{ overflow: "auto" }}>
         {filter === 1 && !loading && !error && (

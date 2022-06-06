@@ -10,13 +10,13 @@ import (
 	"github.com/tsirysndr/mada/types"
 )
 
-func FormatResultOrOpenInBrowser(db *sql.DB, searchResults *bleve.SearchResult, openInBrowser, outputInJSON bool) {
+func FormatResultOrOpenInBrowser(db *sql.DB, index bleve.Index, searchResults *bleve.SearchResult, openInBrowser, outputInJSON bool) {
 	if openInBrowser {
 		err := browser.OpenURL(fmt.Sprintf("http://localhost:%d", PORT))
 		if err != nil {
 			fmt.Printf("Open http://localhost:%d in your browser\n", PORT)
 		}
-		StartHttpServer(db)
+		StartHttpServer(db, index)
 	}
 
 	if !outputInJSON {
@@ -29,13 +29,17 @@ func FormatResultOrOpenInBrowser(db *sql.DB, searchResults *bleve.SearchResult, 
 	fmt.Println(string(b))
 }
 
-func FormatSearchResultOrOpenInBrowser(db *sql.DB, searchResults *types.SearchResult, opt types.SearchOptions) {
+func FormatSearchResultOrOpenInBrowser(db *sql.DB, index bleve.Index, searchResults *types.SearchResult, opt types.SearchOptions) {
 	if opt.OpenInBrowser {
-		err := browser.OpenURL(fmt.Sprintf("http://localhost:%d", PORT))
-		if err != nil {
-			fmt.Printf("Open http://localhost:%d in your browser\n", PORT)
+		url := fmt.Sprintf("http://localhost:%d", PORT)
+		if searchResults.Fokontany != nil {
+			url = fmt.Sprintf("%s/#/fokontany/%s", url, searchResults.Fokontany.ID)
 		}
-		StartHttpServer(db)
+		err := browser.OpenURL(url)
+		if err != nil {
+			fmt.Printf("Open %s in your browser\n", url)
+		}
+		StartHttpServer(db, index)
 	}
 
 	if !opt.OutputInJSON {
@@ -187,13 +191,13 @@ func FormatSearchResults(searchResults *types.SearchResult) {
 
 }
 
-func FormatOrOpenFokontanyInBrowser(db *sql.DB, fokontany *types.Fokontany, openInBrowser, outputInJSON bool) {
+func FormatOrOpenFokontanyInBrowser(db *sql.DB, index bleve.Index, fokontany *types.Fokontany, openInBrowser, outputInJSON bool) {
 	if openInBrowser {
-		err := browser.OpenURL(fmt.Sprintf("http://localhost:%d", PORT))
+		err := browser.OpenURL(fmt.Sprintf("http://localhost:%d/#/fokontany/%s", PORT, fokontany.ID))
 		if err != nil {
-			fmt.Printf("Open http://localhost:%d in your browser\n", PORT)
+			fmt.Printf("Open http://localhost:%d/#/fokontany/%s", PORT, fokontany.ID)
 		}
-		StartHttpServer(db)
+		StartHttpServer(db, index)
 	}
 	if outputInJSON {
 		b, _ := json.MarshalIndent(fokontany, "", "  ")
@@ -228,13 +232,13 @@ func FormatOrOpenFokontanyInBrowser(db *sql.DB, fokontany *types.Fokontany, open
 
 }
 
-func FormatOrOpenCommuneInBrowser(db *sql.DB, commune *types.Commune, openInBrowser, outputInJSON bool) {
+func FormatOrOpenCommuneInBrowser(db *sql.DB, index bleve.Index, commune *types.Commune, openInBrowser, outputInJSON bool) {
 	if openInBrowser {
-		err := browser.OpenURL(fmt.Sprintf("http://localhost:%d", PORT))
+		err := browser.OpenURL(fmt.Sprintf("http://localhost:%d/#/communes/%s", PORT, commune.ID))
 		if err != nil {
-			fmt.Printf("Open http://localhost:%d in your browser\n", PORT)
+			fmt.Printf("Open http://localhost:%d/#/communes/%s", PORT, commune.ID)
 		}
-		StartHttpServer(db)
+		StartHttpServer(db, index)
 	}
 	if outputInJSON {
 		b, _ := json.MarshalIndent(commune, "", "  ")
@@ -262,13 +266,13 @@ func FormatOrOpenCommuneInBrowser(db *sql.DB, commune *types.Commune, openInBrow
 
 }
 
-func FormatOrOpenDistrictInBrowser(db *sql.DB, district *types.District, openInBrowser, outputInJSON bool) {
+func FormatOrOpenDistrictInBrowser(db *sql.DB, index bleve.Index, district *types.District, openInBrowser, outputInJSON bool) {
 	if openInBrowser {
-		err := browser.OpenURL(fmt.Sprintf("http://localhost:%d", PORT))
+		err := browser.OpenURL(fmt.Sprintf("http://localhost:%d/#/districts/%s", PORT, district.ID))
 		if err != nil {
-			fmt.Printf("Open http://localhost:%d in your browser\n", PORT)
+			fmt.Printf("Open http://localhost:%d/#/districts/%s", PORT, district.ID)
 		}
-		StartHttpServer(db)
+		StartHttpServer(db, index)
 	}
 	if outputInJSON {
 		b, _ := json.MarshalIndent(district, "", "  ")
@@ -292,13 +296,13 @@ func FormatOrOpenDistrictInBrowser(db *sql.DB, district *types.District, openInB
 	`, district.ID, district.Name, district.Region, district.Coordinates)
 }
 
-func FormatOrOpenRegionInBrowser(db *sql.DB, region *types.Region, openInBrowser, outputInJSON bool) {
+func FormatOrOpenRegionInBrowser(db *sql.DB, index bleve.Index, region *types.Region, openInBrowser, outputInJSON bool) {
 	if openInBrowser {
-		err := browser.OpenURL(fmt.Sprintf("http://localhost:%d", PORT))
+		err := browser.OpenURL(fmt.Sprintf("http://localhost:%d/#/regions/%s", PORT, region.ID))
 		if err != nil {
-			fmt.Printf("Open http://localhost:%d in your browser\n", PORT)
+			fmt.Printf("Open http://localhost:%d/#/regions/%s", PORT, region.ID)
 		}
-		StartHttpServer(db)
+		StartHttpServer(db, index)
 	}
 	if outputInJSON {
 		b, _ := json.MarshalIndent(region, "", "  ")

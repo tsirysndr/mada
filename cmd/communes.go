@@ -66,7 +66,7 @@ to quickly create a Cobra application.`,
 		if id != "" {
 			result, _ := c.ShowCommune(id)
 			if result != nil {
-				mada.FormatOrOpenCommuneInBrowser(db, result, openInBrowser, outputInJSON)
+				mada.FormatOrOpenCommuneInBrowser(db, index, result, openInBrowser, outputInJSON)
 			}
 			return
 		}
@@ -78,7 +78,7 @@ to quickly create a Cobra application.`,
 		if err != nil {
 			panic(err)
 		}
-		mada.FormatResultOrOpenInBrowser(db, result, openInBrowser, outputInJSON)
+		mada.FormatResultOrOpenInBrowser(db, index, result, openInBrowser, outputInJSON)
 	},
 }
 

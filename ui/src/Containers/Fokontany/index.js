@@ -12,22 +12,7 @@ const FOKONTANY = gql`
     fokontany(id: $id) {
       id
       name
-      code
-      commune
-      province
-      district
-      region
-      geometry {
-        type
-        polygon {
-          type
-          coordinates
-        }
-        multipolygon {
-          type
-          coordinates
-        }
-      }
+      coordinates
     }
   }
 `;
@@ -61,12 +46,8 @@ const Fokontany = (props) => {
 
   useEffect(() => {
     if (!loading && !error) {
-      const { geometry, name } = data.fokontany;
-      const { type } = geometry;
-      const [longitude, latitude] =
-        type === "Polygon"
-          ? geometry.polygon.coordinates[0][0]
-          : geometry.multipolygon.coordinates[0][0][0];
+      const { coordinates, name } = data.fokontany;
+      const [longitude, latitude] = coordinates[0][0][0];
       const location = {
         ...viewport,
         longitude,
@@ -80,8 +61,10 @@ const Fokontany = (props) => {
         features: [
           {
             type: "Feature",
-            geometry:
-              type === "Polygon" ? geometry.polygon : geometry.multipolygon,
+            geometry: {
+              type: "MultiPolygon",
+              coordinates: coordinates[0].map(x => [x]),
+            },
           },
         ],
       };

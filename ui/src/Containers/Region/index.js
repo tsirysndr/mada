@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import DeckGL from "@deck.gl/react";
 import { GeoJsonLayer } from "@deck.gl/layers";
 import MapGL from "react-map-gl";
@@ -12,19 +12,7 @@ const REGION = gql`
     region(id: $id) {
       id
       name
-      code
-      province
-      geometry {
-        type
-        polygon {
-          type
-          coordinates
-        }
-        multipolygon {
-          type
-          coordinates
-        }
-      }
+      coordinates
     }
   }
 `;
@@ -34,6 +22,7 @@ const MAPBOX_ACCESS_TOKEN = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN;
 const MAPBOX_STYLE = process.env.REACT_APP_MAP_STYLE;
 
 const Region = (props) => {
+  const mapRef = useRef(null);
   const { id } = useParams();
   const { loading, error, data } = useQuery(REGION, { variables: { id } });
   const [showPopup, setShowPopup] = useState(false);
@@ -58,12 +47,8 @@ const Region = (props) => {
 
   useEffect(() => {
     if (!loading && !error) {
-      const { geometry, name } = data.region;
-      const { type } = geometry;
-      const [longitude, latitude] =
-        type === "Polygon"
-          ? geometry.polygon.coordinates[0][0]
-          : geometry.multipolygon.coordinates[0][0][0];
+      const { coordinates, name } = data.region;
+      const [longitude, latitude] = coordinates[0][0][0];
       const location = {
         ...viewport,
         longitude,
@@ -77,8 +62,10 @@ const Region = (props) => {
         features: [
           {
             type: "Feature",
-            geometry:
-              type === "Polygon" ? geometry.polygon : geometry.multipolygon,
+            geometry: {
+              type: "MultiPolygon",
+              coordinates: coordinates[0].map((x) => [x]),
+            },
           },
         ],
       };
@@ -141,13 +128,15 @@ const Region = (props) => {
       >
         <MapGL
           {...viewport}
+          ref={mapRef}
           width="100vw"
           height="100vh"
           maxPitch={85}
           mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
           mapStyle={MAPBOX_STYLE}
           // onViewportChange={value => setViewport(value)}
-        ></MapGL>
+        >
+        </MapGL>
       </DeckGL>
       <Popover {...{ popoverClass, setExpanded }} />
     </div>

@@ -99,7 +99,7 @@ func searchInFokontany(db *sql.DB, area olc.CodeArea, opt types.SearchOptions) (
 			Region:      region,
 			District:    district,
 			Country:     country,
-			Coordinates: p.(*geom.Polygon).Coords(),
+			Coordinates: p.(*geom.MultiPolygon).Coords(),
 			Point:       geom.NewPoint(geom.XY).MustSetCoords(geom.Coord{area.LngLo, area.LatLo}).Coords(),
 		}, noresults
 	}
@@ -127,7 +127,7 @@ func searchInCommune(db *sql.DB, area olc.CodeArea, opt types.SearchOptions) (*t
 			Region:      region,
 			District:    district,
 			Country:     country,
-			Coordinates: p.(*geom.Polygon).Coords(),
+			Coordinates: p.(*geom.MultiPolygon).Coords(),
 			Point:       geom.NewPoint(geom.XY).MustSetCoords(geom.Coord{area.LngLo, area.LatLo}).Coords(),
 		}, noresults
 	}
@@ -154,7 +154,7 @@ func searchInDistrict(db *sql.DB, area olc.CodeArea, opt types.SearchOptions) (*
 			Name:        name,
 			Region:      region,
 			Country:     country,
-			Coordinates: p.(*geom.Polygon).Coords(),
+			Coordinates: p.(*geom.MultiPolygon).Coords(),
 			Point:       geom.NewPoint(geom.XY).MustSetCoords(geom.Coord{area.LngLo, area.LatLo}).Coords(),
 		}, noresults
 
@@ -181,7 +181,7 @@ func searchInRegion(db *sql.DB, area olc.CodeArea, opt types.SearchOptions) (*ty
 			ID:          uid,
 			Name:        name,
 			Country:     country,
-			Coordinates: p.(*geom.Polygon).Coords(),
+			Coordinates: p.(*geom.MultiPolygon).Coords(),
 			Point:       geom.NewPoint(geom.XY).MustSetCoords(geom.Coord{area.LngLo, area.LatLo}).Coords(),
 		}, noresults
 

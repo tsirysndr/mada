@@ -3,16 +3,16 @@
 package model
 
 type Commune struct {
-	ID          *string       `json:"id"`
-	Name        *string       `json:"name"`
-	Province    *string       `json:"province"`
-	Code        *string       `json:"code"`
-	District    *string       `json:"district"`
-	Region      *string       `json:"region"`
-	Country     *string       `json:"country"`
-	Coordinates [][][]float64 `json:"coordinates"`
-	Point       []float64     `json:"point"`
-	Geometry    *Geometry     `json:"geometry"`
+	ID          *string         `json:"id"`
+	Name        *string         `json:"name"`
+	Province    *string         `json:"province"`
+	Code        *string         `json:"code"`
+	District    *string         `json:"district"`
+	Region      *string         `json:"region"`
+	Country     *string         `json:"country"`
+	Coordinates [][][][]float64 `json:"coordinates"`
+	Point       []float64       `json:"point"`
+	Geometry    *Geometry       `json:"geometry"`
 }
 
 type CommuneList struct {
@@ -21,23 +21,23 @@ type CommuneList struct {
 }
 
 type Country struct {
-	ID          *string       `json:"id"`
-	Name        *string       `json:"name"`
-	Code        *string       `json:"code"`
-	Coordinates [][][]float64 `json:"coordinates"`
-	Geometry    *MultiPolygon `json:"geometry"`
+	ID          *string         `json:"id"`
+	Name        *string         `json:"name"`
+	Code        *string         `json:"code"`
+	Coordinates [][][][]float64 `json:"coordinates"`
+	Geometry    *MultiPolygon   `json:"geometry"`
 }
 
 type District struct {
-	ID          *string       `json:"id"`
-	Name        *string       `json:"name"`
-	Province    *string       `json:"province"`
-	Code        *string       `json:"code"`
-	Region      *string       `json:"region"`
-	Country     *string       `json:"country"`
-	Coordinates [][][]float64 `json:"coordinates"`
-	Point       []float64     `json:"point"`
-	Geometry    *Geometry     `json:"geometry"`
+	ID          *string         `json:"id"`
+	Name        *string         `json:"name"`
+	Province    *string         `json:"province"`
+	Code        *string         `json:"code"`
+	Region      *string         `json:"region"`
+	Country     *string         `json:"country"`
+	Coordinates [][][][]float64 `json:"coordinates"`
+	Point       []float64       `json:"point"`
+	Geometry    *Geometry       `json:"geometry"`
 }
 
 type DistrictList struct {
@@ -57,17 +57,17 @@ type Fields struct {
 }
 
 type Fokontany struct {
-	ID          *string       `json:"id"`
-	Name        *string       `json:"name"`
-	Province    *string       `json:"province"`
-	Code        *string       `json:"code"`
-	Commune     *string       `json:"commune"`
-	District    *string       `json:"district"`
-	Region      *string       `json:"region"`
-	Country     *string       `json:"country"`
-	Coordinates [][][]float64 `json:"coordinates"`
-	Point       []float64     `json:"point"`
-	Geometry    *Geometry     `json:"geometry"`
+	ID          *string         `json:"id"`
+	Name        *string         `json:"name"`
+	Province    *string         `json:"province"`
+	Code        *string         `json:"code"`
+	Commune     *string         `json:"commune"`
+	District    *string         `json:"district"`
+	Region      *string         `json:"region"`
+	Country     *string         `json:"country"`
+	Coordinates [][][][]float64 `json:"coordinates"`
+	Point       []float64       `json:"point"`
+	Geometry    *Geometry       `json:"geometry"`
 }
 
 type FokontanyList struct {
@@ -98,14 +98,14 @@ type Polygon struct {
 }
 
 type Region struct {
-	ID          *string       `json:"id"`
-	Name        *string       `json:"name"`
-	Province    *string       `json:"province"`
-	Code        *string       `json:"code"`
-	Geometry    *Geometry     `json:"geometry"`
-	Country     *string       `json:"country"`
-	Coordinates [][][]float64 `json:"coordinates"`
-	Point       []float64     `json:"point"`
+	ID          *string         `json:"id"`
+	Name        *string         `json:"name"`
+	Province    *string         `json:"province"`
+	Code        *string         `json:"code"`
+	Geometry    *Geometry       `json:"geometry"`
+	Country     *string         `json:"country"`
+	Coordinates [][][][]float64 `json:"coordinates"`
+	Point       []float64       `json:"point"`
 }
 
 type RegionList struct {
