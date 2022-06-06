@@ -46,24 +46,6 @@ async function main() {
       },
     }));
     geoJSON.features = features;
-    /*console.log(
-    JSON.stringify(
-      geoJSON.features
-        .filter((x) => x.properties["ADM1_EN"].includes("Sofia"))
-        .map((x) => {
-          x.geometry.coordinates;
-          if (x.geometry.coordinates[1].length === 1) {
-            return {
-              ...x,
-              geometry: {
-                ...x.geometry,
-                coordinates: [x.geometry.coordinates[1][0]],
-              },
-            }
-          }
-        })
-    )
-  );*/
     fs.writeFileSync(file.geojson, JSON.stringify(geoJSON));
   }
 }
