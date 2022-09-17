@@ -1,4 +1,19 @@
 # Mada CLI
+
+<p>
+  <a href="https://github.com/tsirysndr/mada/releases/latest" target="_blank">
+    <img alt="Github Release" src="https://img.shields.io/github/release/tsirysndr/mada.svg" />
+  </a>
+ <a href="https://pkg.go.dev/github.com/tsirysndr/mada" target="_blank">
+        <img alt="Go Reference" src="https://pkg.go.dev/badge/github.com/tsirysndr/mada" />
+ </a>
+  <a href="https://github.com/tsirysndr/mada/actions/workflows/release.yml" target="_blank">
+    <img alt="release" src="https://github.com/tsirysndr/mada/actions/workflows/release.yml/badge.svg" />
+  </a>
+  <a href="LICENSE" target="_blank">
+    <img alt="License: BSD" src="https://img.shields.io/badge/License-BSD-blue.svg" />
+  </a>
+</p>
 <p>
 <a href="https://www.buymeacoffee.com/tsiry">
   <img src="https://cdn.buymeacoffee.com/buttons/v2/default-red.png" alt="Buy Me A Coffee" height="40" />
@@ -7,17 +22,25 @@
 
 Mada is a CLI that facilitates the search for regions, districts, communes and fokontany.
 
-<img src="./preview.png" />
-
+<img width="800"  src="./preview.svg" />
 
 ## 🚚 Installation
 
-With Docker:
+### macOS/Linux
+```bash
+brew install tsirysndr/tap/mada
+```
+
+### Docker
+
 ```bash
 docker pull tsiry/mada:latest
 ```
 
+### Compile from source
+
 Without Docker, you need to install libspatialite before continuing
+
 ```bash
 # For Ubuntu
 sudo apt install libsqlite3-mod-spatialite
@@ -33,6 +56,7 @@ go install -v github.com/tsirysndr/mada@latest
 ## 🚀 Usage
 
 With Docker:
+
 ```bash
 # execute mada init at first launch to initialize the database
 docker run -v `pwd`/mada:"/root/.mada" -it tsiry/mada mada init
@@ -129,4 +153,4 @@ Without Docker:
 ~> mada ui
 ```
 
-If you want to use postgresql (with postgis extension) instead of sqlite (with spatialite), add the environment variable MADA_POSTGRES_URL, for example ``export MADA_POSTGRES_URL=postgres://postgres@localhost:5432/mada?sslmode=disable``
+If you want to use postgresql (with postgis extension) instead of sqlite (with spatialite), add the environment variable MADA_POSTGRES_URL, for example `export MADA_POSTGRES_URL=postgres://postgres@localhost:5432/mada?sslmode=disable`
