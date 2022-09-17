@@ -5,16 +5,16 @@ All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
 
-1. Redistributions of source code must retain the above copyright notice,
-   this list of conditions and the following disclaimer.
+ 1. Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
 
-2. Redistributions in binary form must reproduce the above copyright notice,
-   this list of conditions and the following disclaimer in the documentation
-   and/or other materials provided with the distribution.
+ 2. Redistributions in binary form must reproduce the above copyright notice,
+    this list of conditions and the following disclaimer in the documentation
+    and/or other materials provided with the distribution.
 
-3. Neither the name of the copyright holder nor the names of its contributors
-   may be used to endorse or promote products derived from this software
-   without specific prior written permission.
+ 3. Neither the name of the copyright holder nor the names of its contributors
+    may be used to endorse or promote products derived from this software
+    without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -38,16 +38,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const Banner = `
-888b     d888               888                .d8888b.  888      8888888 
-8888b   d8888               888               d88P  Y88b 888        888   
-88888b.d88888               888               888    888 888        888   
-888Y88888P888  8888b.   .d88888  8888b.       888        888        888   
-888 Y888P 888     "88b d88" 888     "88b      888        888        888   
-888  Y8P  888 .d888888 888  888 .d888888      888    888 888        888   
-888   "   888 888  888 Y88b 888 888  888      Y88b  d88P 888        888   
-888       888 "Y888888  "Y88888 "Y888888       "Y8888P"  88888888 8888888
-`
+const q = "`"
+
+var Banner = fmt.Sprintf(`
+    __  ___          __      ________    ____
+   /  |/  /___ _____/ /___ _/ ____/ /   /  _/
+  / /|_/ / __ %s/ __  / __ %s/ /   / /    / /  
+ / /  / / /_/ / /_/ / /_/ / /___/ /____/ /   
+/_/  /_/\__,_/\__,_/\__,_/\____/_____/___/   
+                                             
+`, q, q)
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{

@@ -5,11 +5,19 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"runtime"
 
 	"github.com/mattn/go-sqlite3"
 )
 
 func OpenDatabaseConnection() (*sql.DB, error) {
+	if runtime.GOOS == "darwin" {
+		if os.Getenv("MADA_POSTGRES_URL") != "" {
+			return sql.Open("postgres", os.Getenv("MADA_POSTGRES_URL"))
+		}
+		log.Fatalln("MADA_POSTGRES_URL environment variable not set")
+	}
+
 	if os.Getenv("MADA_POSTGRES_URL") != "" {
 		return sql.Open("postgres", os.Getenv("MADA_POSTGRES_URL"))
 	}
