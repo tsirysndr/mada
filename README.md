@@ -11,7 +11,7 @@
     <img alt="release" src="https://github.com/tsirysndr/mada/actions/workflows/release.yml/badge.svg" />
   </a>
   <a href="LICENSE" target="_blank">
-    <img alt="License: BSD" src="https://img.shields.io/badge/License-BSD-blue.svg" />
+    <img alt="License: BSD" src="https://img.shields.io/badge/License-BSD-cyan.svg" />
   </a>
 </p>
 <p>
