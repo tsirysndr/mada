@@ -61,6 +61,15 @@ pkg install libspatialite
 go install -v github.com/tsirysndr/mada@latest
 ```
 
+### Nix
+
+```bash
+git clone https://github.com/tsirysndr/mada
+cd mada
+nix develop
+go install
+```
+
 ## 🚀 Usage
 
 With Docker:
