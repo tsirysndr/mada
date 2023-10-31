@@ -1,0 +1,5 @@
+{
+  "root": "",
+  "name": "go",
+  "sdkRuntime": "tsiry/dagger-sdk-deno"
+}
