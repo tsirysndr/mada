@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "gdal-async": "^3.5.0",
+    "gdal-async": "^3.7.2",
     "shapefile-to-geojson": "^1.0.1",
     "shp": "^0.0.1"
   }
