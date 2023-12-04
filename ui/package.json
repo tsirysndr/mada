@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@apollo/client": "^3.6.6",
-    "@deck.gl/core": "^8.7.10",
+    "@deck.gl/core": "^8.9.32",
     "@deck.gl/layers": "^8.7.10",
     "@deck.gl/mapbox": "^8.7.10",
     "@deck.gl/react": "^8.7.10",
