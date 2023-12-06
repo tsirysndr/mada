@@ -1261,12 +1261,12 @@
   resolved "https://registry.yarnpkg.com/@deck.gl/mapbox/-/mapbox-8.7.10.tgz#abe73d10c14f7ac050bfcf098766845ea493ac28"
   integrity sha512-ZBB9gP1PAKCZU0Z9iIeVKVJyq0sBZHTOP9H/7RLL0/AWlg0XAn/+hmp/27ZrMBVB6wzzH/2pb1GY8noFD0IWgA==
 
-"@deck.gl/react@^8.7.10":
-  version "8.7.10"
-  resolved "https://registry.yarnpkg.com/@deck.gl/react/-/react-8.7.10.tgz#ba55557146543cfb04c296d7279ecf9de2bea7c2"
-  integrity sha512-PepgNXzzXlQ8BqfRlY4uttt0MDOfHaSdX/0LtueXJPN0RWP1bi/cP500vhTy6MAjsgtACIfDfoXLyU9mL/h6+w==
+"@deck.gl/react@^8.9.32":
+  version "8.9.32"
+  resolved "https://registry.yarnpkg.com/@deck.gl/react/-/react-8.9.32.tgz#9111801def2ad28c90292fbbbdea3de65288891a"
+  integrity sha512-FGBry/W8lCokSarKXhK7iWwdAG1cjJwEwlAv6nI/rmG28e7uElyVvOsMzzoIEFrQTovN4Xzs4RZrxliFk8CaWg==
   dependencies:
-    prop-types "^15.6.0"
+    "@babel/runtime" "^7.0.0"
 
 "@eslint/eslintrc@^1.3.0":
   version "1.3.0"
@@ -7765,7 +7765,7 @@ prompts@^2.0.1, prompts@^2.4.2:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@^15.6.0, prop-types@^15.7.2, prop-types@^15.8.1:
+prop-types@^15.7.2, prop-types@^15.8.1:
   version "15.8.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
