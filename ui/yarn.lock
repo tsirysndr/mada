@@ -1256,10 +1256,13 @@
     "@math.gl/polygon" "^3.5.7"
     earcut "^2.0.6"
 
-"@deck.gl/mapbox@^8.7.10":
-  version "8.7.10"
-  resolved "https://registry.yarnpkg.com/@deck.gl/mapbox/-/mapbox-8.7.10.tgz#abe73d10c14f7ac050bfcf098766845ea493ac28"
-  integrity sha512-ZBB9gP1PAKCZU0Z9iIeVKVJyq0sBZHTOP9H/7RLL0/AWlg0XAn/+hmp/27ZrMBVB6wzzH/2pb1GY8noFD0IWgA==
+"@deck.gl/mapbox@^8.9.32":
+  version "8.9.32"
+  resolved "https://registry.yarnpkg.com/@deck.gl/mapbox/-/mapbox-8.9.32.tgz#76dd5ac80aefe7e8b7964d2ed9b6079fcc1f1ac4"
+  integrity sha512-SFUiHIHnonEloiz4702oO4t91nqhgV7fcrYtu5RPY5Jvq1DsXo2xEU+E9QpNZLtoB8doS56RdS6eCSZV5LtVOA==
+  dependencies:
+    "@babel/runtime" "^7.0.0"
+    "@types/mapbox-gl" "^2.6.3"
 
 "@deck.gl/react@^8.9.32":
   version "8.9.32"
@@ -2351,6 +2354,13 @@
   version "2.7.2"
   resolved "https://registry.yarnpkg.com/@types/mapbox-gl/-/mapbox-gl-2.7.2.tgz#7122ad95cb8dadc4168c166eb8f3f3ba5ed51d6b"
   integrity sha512-2/qyLtiQxiTYEQuOxaqiNiZPvjND35rde/ZQpxx8D5bEcYK4PDXWv/DIxPsfxqyhiP1E6Wbni0SfjkbqcqOfCQ==
+  dependencies:
+    "@types/geojson" "*"
+
+"@types/mapbox-gl@^2.6.3":
+  version "2.7.19"
+  resolved "https://registry.yarnpkg.com/@types/mapbox-gl/-/mapbox-gl-2.7.19.tgz#d650c30496323a7d429b6f672bc45218c680bda0"
+  integrity sha512-pkRdlhQJNbtwcKJSVC4uuOA6M3OlOObIMhNecqHB991oeaDF5XkjSIRaTE0lh5p4KClptSCxW6MBiREVRHrl2A==
   dependencies:
     "@types/geojson" "*"
 
