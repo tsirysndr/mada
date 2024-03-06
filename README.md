@@ -14,11 +14,6 @@
     <img alt="License: BSD" src="https://img.shields.io/badge/License-BSD-cyan.svg" />
   </a>
 </p>
-<p>
-<a href="https://www.buymeacoffee.com/tsiry">
-  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-red.png" alt="Buy Me A Coffee" height="40" />
-</a>
-</p>
 
 Mada is a CLI that facilitates the search for regions, districts, communes and fokontany.
 
