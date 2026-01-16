@@ -1599,28 +1599,12 @@
     "@loaders.gl/worker-utils" "3.4.14"
     "@probe.gl/log" "^4.0.1"
 
-"@loaders.gl/images@^3.1.5":
-  version "3.2.3"
-  resolved "https://registry.yarnpkg.com/@loaders.gl/images/-/images-3.2.3.tgz#c953d8a66710261ed5ba8349d1e2018dca0fd91b"
-  integrity sha512-Y2zBX4WYpN1bGA+jy+Kwn5K9KxbSCFZClz6CFh/mkVsMx1smshmGASEusDlTHTRbNoFmKX622HpeI2lyBL8j9w==
-  dependencies:
-    "@loaders.gl/loader-utils" "3.2.3"
-
 "@loaders.gl/images@^3.4.13":
   version "3.4.14"
   resolved "https://registry.yarnpkg.com/@loaders.gl/images/-/images-3.4.14.tgz#d7a4950f11b48d028cf3719cf6498945f4a05c14"
   integrity sha512-tL447hTWhOKBOB87SE4hvlC8OkbRT0mEaW1a/wIS9f4HnYDa/ycRLMV+nvdvYMZur4isNPam44oiRqi7GcILkg==
   dependencies:
     "@loaders.gl/loader-utils" "3.4.14"
-
-"@loaders.gl/loader-utils@3.2.3":
-  version "3.2.3"
-  resolved "https://registry.yarnpkg.com/@loaders.gl/loader-utils/-/loader-utils-3.2.3.tgz#c5b9deec11970789c561754aac1ea740206b5df5"
-  integrity sha512-TyAHXaXjDZM/5X451MIixOqztEyGCSBJYqNw1ctaVAHruryisJcCscNHipRngbNw/2gVV74ANigv0s44F27WtQ==
-  dependencies:
-    "@babel/runtime" "^7.3.1"
-    "@loaders.gl/worker-utils" "3.2.3"
-    "@probe.gl/stats" "^3.5.0"
 
 "@loaders.gl/loader-utils@3.4.14":
   version "3.4.14"
@@ -1631,12 +1615,12 @@
     "@loaders.gl/worker-utils" "3.4.14"
     "@probe.gl/stats" "^4.0.1"
 
-"@loaders.gl/worker-utils@3.2.3":
-  version "3.2.3"
-  resolved "https://registry.yarnpkg.com/@loaders.gl/worker-utils/-/worker-utils-3.2.3.tgz#a295d5350a2faab59dc543d7f889393b1bfd8611"
-  integrity sha512-ABlcuTTeqJ8/ZOLXaS7Kwz6htixTFlPdtlpM9ks9rZtqDaqLn6SIdzjZHy/We1ko8Ve/Zawpwr9RM1b+3G6lsQ==
+"@loaders.gl/schema@^3.4.13":
+  version "3.4.15"
+  resolved "https://registry.yarnpkg.com/@loaders.gl/schema/-/schema-3.4.15.tgz#316565b4fcbffb135b52e25e96cee4ac5c541713"
+  integrity sha512-8oRtstz0IsqES7eZd2jQbmCnmExCMtL8T6jWd1+BfmnuyZnQ0B6TNccy++NHtffHdYuzEoQgSELwcdmhSApYew==
   dependencies:
-    "@babel/runtime" "^7.3.1"
+    "@types/geojson" "^7946.0.7"
 
 "@loaders.gl/worker-utils@3.4.14":
   version "3.4.14"
@@ -1645,15 +1629,15 @@
   dependencies:
     "@babel/runtime" "^7.3.1"
 
-"@luma.gl/constants@8.5.13", "@luma.gl/constants@^8.5.10":
-  version "8.5.13"
-  resolved "https://registry.yarnpkg.com/@luma.gl/constants/-/constants-8.5.13.tgz#9c8cdfb7e07ac4d9f2ee87ec50d6b41763d5c7a3"
-  integrity sha512-mk16XITcWhyWFEZ98MRmbTluoT2ZrEbF4IrK/PPF+owZTlYFY4h2Yviv33Q61T3qYLbwSAv2eflltSEFWWFPPQ==
+"@luma.gl/constants@8.5.21", "@luma.gl/constants@^8.5.21":
+  version "8.5.21"
+  resolved "https://registry.yarnpkg.com/@luma.gl/constants/-/constants-8.5.21.tgz#81825e9bd9bdf4a9449bcface8b504389f65f634"
+  integrity sha512-aJxayGxTT+IRd1vfpcgD/cKSCiVJjBNiuiChS96VulrmCvkzUOLvYXr42y5qKB4RyR7vOIda5uQprNzoHrhQAA==
 
-"@luma.gl/core@^8.5.10":
-  version "8.5.13"
-  resolved "https://registry.yarnpkg.com/@luma.gl/core/-/core-8.5.13.tgz#879e87871a7e6e8c1e1926a6ff52eca481c89c8e"
-  integrity sha512-A5pZpf8s07Ya6LSuchoRtlDvlQ9+SV6BGMCFsXJ0223zrJFxAobpGHAdJ0Ui0or0YRLAkQW5xmfR8TAnHwtvpA==
+"@luma.gl/core@^8.5.21":
+  version "8.5.21"
+  resolved "https://registry.yarnpkg.com/@luma.gl/core/-/core-8.5.21.tgz#dc630f1ea18900287ac8da60724d0d8f783b31b1"
+  integrity sha512-11jQJQEMoR/IN2oIsd4zFxiQJk6FE+xgVIMUcsCTBuzafTtQZ8Po9df8mt+MVewpDyBlTVs6g8nxHRH4np1ukA==
   dependencies:
     "@babel/runtime" "^7.0.0"
     "@luma.gl/constants" "8.5.21"
@@ -1810,29 +1794,22 @@
   resolved "https://registry.yarnpkg.com/@mapbox/whoots-js/-/whoots-js-3.1.0.tgz#497c67a1cef50d1a2459ba60f315e448d2ad87fe"
   integrity sha512-Es6WcD0nO5l+2BOQS4uLfNPYQaNDfbot3X1XUoloz+x0mPDS3eeORZJl06HXjwBG1fOGwCRnzK88LMdxKRrd6Q==
 
-"@math.gl/core@3.5.7", "@math.gl/core@^3.5.0":
+"@math.gl/core@3.6.3", "@math.gl/core@^3.6.2":
+  version "3.6.3"
+  resolved "https://registry.yarnpkg.com/@math.gl/core/-/core-3.6.3.tgz#a6bf796ed421093099749d609de8d99a3ac20a53"
+  integrity sha512-jBABmDkj5uuuE0dTDmwwss7Cup5ZwQ6Qb7h1pgvtkEutTrhkcv8SuItQNXmF45494yIHeoGue08NlyeY6wxq2A==
+  dependencies:
+    "@babel/runtime" "^7.12.0"
+    "@math.gl/types" "3.6.3"
+    gl-matrix "^3.4.0"
+
+"@math.gl/core@^3.5.0":
   version "3.5.7"
   resolved "https://registry.yarnpkg.com/@math.gl/core/-/core-3.5.7.tgz#41145f214c36f20a6bf32e4c25551e97c6828e99"
   integrity sha512-EtMS3Nzv//nc6gAVcmvVsZAkf8+sVNruPcWEaBh95h82T7GroMLLf1WBgOhtOBOvCh6vInxjcYDsJOn7RY5oqg==
   dependencies:
     "@babel/runtime" "^7.12.0"
     gl-matrix "~3.3.0"
-
-"@math.gl/core@3.6.3", "@math.gl/core@^3.6.2":
-  version "3.6.3"
-  resolved "https://registry.yarnpkg.com/@math.gl/core/-/core-3.6.3.tgz#a6bf796ed421093099749d609de8d99a3ac20a53"
-  integrity sha512-jBABmDkj5uuuE0dTDmwwss7Cup5ZwQ6Qb7h1pgvtkEutTrhkcv8SuItQNXmF45494yIHeoGue08NlyeY6wxq2A==
-
-
-"@math.gl/polygon@^3.5.7":
-  version "3.5.7"
-  resolved "https://registry.yarnpkg.com/@math.gl/polygon/-/polygon-3.5.7.tgz#6ddab215552919a2f784e8ea746fe582475c1e33"
-  integrity sha512-fTi9Vfs7+LQ5Cn5ABSp0i+rfRec2fFuPhUE+Xpvg3dELQP+YMSw7FeR5SvUBgt3UY86qLmrkmxz3WwffcJA/eg==
-
-  dependencies:
-    "@babel/runtime" "^7.12.0"
-    "@math.gl/types" "3.6.3"
-    gl-matrix "^3.4.0"
 
 "@math.gl/polygon@^3.6.2":
   version "3.6.3"
@@ -1841,30 +1818,12 @@
   dependencies:
     "@math.gl/core" "3.6.3"
 
-"@math.gl/types@3.6.3":
-  version "3.6.3"
-  resolved "https://registry.yarnpkg.com/@math.gl/types/-/types-3.6.3.tgz#9fa9866feabcbb76de107d78ff3a89c0243ac374"
-  integrity sha512-3uWLVXHY3jQxsXCr/UCNPSc2BG0hNUljhmOBt9l+lNFDp7zHgm0cK2Tw4kj2XfkJy4TgwZTBGwRDQgWEbLbdTA==
-
 "@math.gl/sun@^3.6.2":
   version "3.6.3"
   resolved "https://registry.yarnpkg.com/@math.gl/sun/-/sun-3.6.3.tgz#30c15612313b56349c568f21f39c0e0f0e77b2df"
   integrity sha512-mrx6CGYYeTNSQttvcw0KVUy+35YDmnjMqpO/o0t06Vcghrt0HNruB/ScRgUSbJrgkbOg1Vcqm23HBd++clzQzw==
   dependencies:
     "@babel/runtime" "^7.12.0"
-
-"@math.gl/types@3.6.3":
-  version "3.6.3"
-  resolved "https://registry.yarnpkg.com/@math.gl/types/-/types-3.6.3.tgz#9fa9866feabcbb76de107d78ff3a89c0243ac374"
-  integrity sha512-3uWLVXHY3jQxsXCr/UCNPSc2BG0hNUljhmOBt9l+lNFDp7zHgm0cK2Tw4kj2XfkJy4TgwZTBGwRDQgWEbLbdTA==
-
-"@math.gl/web-mercator@^3.6.2":
-  version "3.6.3"
-  resolved "https://registry.yarnpkg.com/@math.gl/web-mercator/-/web-mercator-3.6.3.tgz#ef91168e030eecffc788618d686e8a6c1d7a0bf8"
-  integrity sha512-UVrkSOs02YLehKaehrxhAejYMurehIHPfFQvPFZmdJHglHOU4V2cCUApTVEwOksvCp161ypEqVp+9H6mGhTTcw==
-  dependencies:
-    "@babel/runtime" "^7.12.0"
-    gl-matrix "^3.4.0"
 
 "@math.gl/web-mercator@^3.6.2":
   version "3.6.3"
@@ -1954,10 +1913,10 @@
   dependencies:
     "@babel/runtime" "^7.0.0"
 
-"@remix-run/router@1.13.1":
-  version "1.13.1"
-  resolved "https://registry.yarnpkg.com/@remix-run/router/-/router-1.13.1.tgz#07e2a8006f23a3bc898b3f317e0a58cc8076b86e"
-  integrity sha512-so+DHzZKsoOcoXrILB4rqDkMDy7NLMErRdOxvzvOKb507YINKUP4Di+shbTZDhSE/pBZ+vr7XGIpcOO0VLSA
+"@remix-run/router@1.23.2":
+  version "1.23.2"
+  resolved "https://registry.yarnpkg.com/@remix-run/router/-/router-1.23.2.tgz#156c4b481c0bee22a19f7924728a67120de06971"
+  integrity sha512-Ic6m2U/rMjTkhERIa/0ZtXJP17QUi2CbWE7cqx4J58M8aA3QTfW+2UlQ4psvTX9IO1RfNVhK3pcpdjej7L+t2w==
 
 "@rollup/plugin-babel@^5.2.0":
   version "5.3.1"
@@ -8354,20 +8313,20 @@ react-refresh@^0.11.0:
   resolved "https://registry.yarnpkg.com/react-refresh/-/react-refresh-0.11.0.tgz#77198b944733f0f1f1a90e791de4541f9f074046"
   integrity sha512-F27qZr8uUqwhWZboondsPx8tnC3Ct3SxZA3V5WyEvujRyyNv0VYPhoBg1gZ8/MV5tubQp76Trw8lTv9hzRBa+A==
 
-react-router-dom@^6.18.0:
-  version "6.20.1"
-  resolved "https://registry.yarnpkg.com/react-router-dom/-/react-router-dom-6.20.1.tgz#e34f8075b9304221420de3609e072bb349824984"
-  integrity sha512-npzfPWcxfQN35psS7rJgi/EW0Gx6EsNjfdJSAk73U/HqMEJZ2k/8puxfwHFgDQhBGmS3+sjnGbMdMSV45axPQw==
+react-router-dom@^6.30.3:
+  version "6.30.3"
+  resolved "https://registry.yarnpkg.com/react-router-dom/-/react-router-dom-6.30.3.tgz#42ae6dc4c7158bfb0b935f162b9621b29dddf740"
+  integrity sha512-pxPcv1AczD4vso7G4Z3TKcvlxK7g7TNt3/FNGMhfqyntocvYKj+GCatfigGDjbLozC4baguJ0ReCigoDJXb0ag==
   dependencies:
-    "@remix-run/router" "1.13.1"
-    react-router "6.20.1"
+    "@remix-run/router" "1.23.2"
+    react-router "6.30.3"
 
-react-router@6.20.1:
-  version "6.20.1"
-  resolved "https://registry.yarnpkg.com/react-router/-/react-router-6.20.1.tgz#e8cc326031d235aaeec405bb234af77cf0fe75ef"
-  integrity sha512-ccvLrB4QeT5DlaxSFFYi/KR8UMQ4fcD8zBcR71Zp1kaYTC5oJKYAp1cbavzGrogwxca+ubjkd7XjFZKBW8CxPA==
+react-router@6.30.3:
+  version "6.30.3"
+  resolved "https://registry.yarnpkg.com/react-router/-/react-router-6.30.3.tgz#994b3ccdbe0e81fe84d4f998100f62584dfbf1cf"
+  integrity sha512-XRnlbKMTmktBkjCLE8/XcZFlnHvr2Ltdr1eJX4idL55/9BbORzyZEaIkBFDhFGCEWBBItsVrDxwx3gnisMitdw==
   dependencies:
-    "@remix-run/router" "1.13.1"
+    "@remix-run/router" "1.23.2"
 
 react-scripts@5.0.1:
   version "5.0.1"
