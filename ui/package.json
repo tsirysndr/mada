@@ -14,7 +14,7 @@
     "@testing-library/user-event": "^13.5.0",
     "antd": "^4.20.7",
     "graphql": "^16.5.0",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "mapbox-gl": "^2.8.2",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
